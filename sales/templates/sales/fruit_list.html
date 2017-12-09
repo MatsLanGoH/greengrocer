@@ -1,0 +1,32 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    {% if fruit_list %}
+        <table>
+
+            <tr>
+                <td>ID</td>
+                <td>名称</td>
+                <td>単価</td>
+                <td>登録日時</td>
+                <td></td>
+            </tr>
+
+            {% for fruit in fruit_list %}
+                <tr>
+                    <td>{{ fruit.id }}</td>
+                    <td>{{ fruit.label }}</td>
+                    <td>{{ fruit.price }}</td>
+                    <td>{{ fruit.created_at }}</td>
+{#                    TODO: DELETE UPDATE #}
+                    <td>DELETE UPDATE</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+{#    TODO : CREATE BUTTON #}
+   <button>CREATE</button>
+
+
+{% endblock content %}
