@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views import generic
 
-from .models import Fruit
+from .models import Fruit, SalesLedger
 
 # TODO
 # TODO: All views need the user to be logged in (except for login site)
@@ -22,12 +22,20 @@ def top(request):
 
 
 class FruitListView(generic.ListView):
+    # TODO: docstring
     model = Fruit
 
     # TODO: Make sure these are ordered by reverse creation date!
     def get_queryset(self):
         return Fruit.objects.order_by('-created_at')
 
+
+class SalesLedgerListView(generic.ListView):
+    # TODO: docstring
+    model = SalesLedger
+
+    def get_queryset(self):
+        return SalesLedger.objects.order_by('-created_at')
 
 
 

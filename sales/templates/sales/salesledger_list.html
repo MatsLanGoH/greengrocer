@@ -1,0 +1,39 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    {% if salesledger_list %}
+        <table>
+            <tr>
+                <td>果物</td>
+                <td>個数</td>
+                <td>売り上げ</td>
+                <td>販売日時</td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            {% for salesledger in salesledger_list %}
+                <tr>
+                    <td>{{ salesledger.fruit.label }}</td>
+                    <td>{{ salesledger.num_items }}</td>
+                    <td>{{ salesledger.amount }}</td>
+                    <td>{{ salesledger.created_at }}</td>
+{#                    TODO: DELETE UPDATE #}
+                    <td>UPDATE</td>
+                    <td>DELETE</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+{#    TODO : CREATE BUTTON #}
+   <button>CREATE</button>
+
+   <p>CSV一括登録</p>
+
+{#    TODO : UPLOAD FORM BUTTON #}
+   <input type="text"></input>
+   <button>CSV UPLOAD</button>
+
+
+{% endblock content %}
