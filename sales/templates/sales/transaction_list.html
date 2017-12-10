@@ -1,5 +1,7 @@
 {% extends "base_generic.html" %}
 
+{# TODO: Create layout #}
+
 {% block content %}
     {% if transaction_list %}
         <table>
@@ -19,8 +21,8 @@
                     <td>{{ transaction.amount }}</td>
                     <td>{{ transaction.created_at }}</td>
                     {#                    TODO: DELETE UPDATE #}
-                    <td>UPDATE</td>
-                    <td>DELETE</td>
+                    <td><a href="{% url 'transaction_update' transaction.pk %}">編集</a></td>
+                    <td><a href="{% url 'transaction_delete' transaction.pk %}">削除</a></td>
                 </tr>
             {% endfor %}
         </table>
@@ -28,8 +30,10 @@
         <h1>まだ販売情報は登録されていません</h1>
     {% endif %}
 
-    {#    TODO : CREATE BUTTON #}
-    <button>CREATE</button>
+    <form action="" method-"post">
+    {% csrf_token %}
+    <button type="submit" formaction="{% url 'transaction_create' %}">販売情報登録</button>
+    </form>
 
     <p>CSV一括登録</p>
 

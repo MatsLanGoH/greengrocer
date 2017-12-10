@@ -1,10 +1,14 @@
+from django.contrib.admin.widgets import AdminDateWidget
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.urls import reverse_lazy
+from django.utils.timezone import now
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from .models import Fruit, Transaction
+
+
 
 # TODO
 # TODO: All views need the user to be logged in (except for login site)
@@ -21,6 +25,33 @@ def top(request):
     # TODO: Add login_required decorator or mixin.
     return render(request,
                   'top.html')
+
+
+def transaction_stats(request):
+    """
+    TODO: docstring
+    :param request:
+    :return:
+    """
+    # TODO: Get Transaction objects
+    transactions = Transaction.objects.all()
+
+    # TODO: Total sales
+    sum_total = sum([t.amount for t in transactions])
+
+
+    # TODO: Total past three months with details
+    # TODO: Make sure we group same fruit (get set, sort by fruit or something)
+    # TODO: Look for edge cases (leap years etc)
+
+    # TODO: Daily sales
+
+    # TODO: Use context to pass data to template
+    return render(request,
+                  'stats.html',
+                  context={
+                      'sum_total': sum_total
+                  })
 
 
 class FruitListView(generic.ListView):
@@ -64,5 +95,30 @@ class TransactionListView(generic.ListView):
         return Transaction.objects.order_by('-created_at')
 
 
+class TransactionCreate(CreateView):
+    # TODO: docstring
+    model = Transaction
+    fields = ['fruit', 'num_items', 'created_at']
+    success_url = reverse_lazy('transactions')
+    initial = {'created_at': now()}
+
+    # TODO: Add a real time picker (jquery or bootstrap)
+
+    # TODO: validate input fields
+    # TODO: Calculate amount from given values (in model)
 
 
+class TransactionUpdate(UpdateView):
+    # TODO: docstring
+    model = Transaction
+    fields = ['fruit', 'num_items', 'created_at']
+    success_url = reverse_lazy('transactions')
+
+    # TODO: validate input fields
+    # TODO: make success urls DRY
+
+
+class TransactionDelete(DeleteView):
+    # TODO: docstring
+    model = Transaction
+    success_url = reverse_lazy('transactions')

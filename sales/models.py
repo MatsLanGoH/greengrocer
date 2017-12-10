@@ -32,13 +32,17 @@ class Transaction(models.Model):
     fruit = models.ForeignKey('Fruit', on_delete=models.CASCADE, help_text="果物を指定してください")
     num_items = models.PositiveIntegerField(help_text="個数を記入してください")
     amount = models.PositiveIntegerField(help_text="売り上げ金額を記入してください")
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    if not amount:
+        amount = fruit.price * num_items
+    created_at = models.DateTimeField(null=True, blank=True, help_text="販売日時を入力してください")
+
+    # TODO: If we do not have a amount specified, we want to calculate the amount from fruit.price
 
     def __str__(self):
         """
         :return: 販売情報モデルを表す文字列を返す。
         """
 
-        return "{} | {}個 | 合計{} | 販売日時{}".format(self.fruit, self.num_items, self.amount, self.created_at)
+        return "{}: {}円({})".format(self.fruit.label, self.amount, self.num_items)
 
 
