@@ -1,0 +1,14 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+    <h1>果物を削除する</h1>
+
+    <p>この果物を削除しますか？ {{ fruit }}</p>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="submit" value="削除">
+    </form>
+
+{% endblock %}

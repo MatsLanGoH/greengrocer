@@ -1,0 +1,41 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    {% if transaction_list %}
+        <table>
+            <tr>
+                <td>果物</td>
+                <td>個数</td>
+                <td>売り上げ</td>
+                <td>販売日時</td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            {% for transaction in transaction_list %}
+                <tr>
+                    <td>{{ transaction.fruit.label }}</td>
+                    <td>{{ transaction.num_items }}</td>
+                    <td>{{ transaction.amount }}</td>
+                    <td>{{ transaction.created_at }}</td>
+                    {#                    TODO: DELETE UPDATE #}
+                    <td>UPDATE</td>
+                    <td>DELETE</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h1>まだ販売情報は登録されていません</h1>
+    {% endif %}
+
+    {#    TODO : CREATE BUTTON #}
+    <button>CREATE</button>
+
+    <p>CSV一括登録</p>
+
+    {#    TODO : UPLOAD FORM BUTTON #}
+    <input type="text"></input>
+    <button>CSV UPLOAD</button>
+
+
+{% endblock content %}

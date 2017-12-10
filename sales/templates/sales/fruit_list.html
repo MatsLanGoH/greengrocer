@@ -18,15 +18,20 @@
                     <td>{{ fruit.label }}</td>
                     <td>{{ fruit.price }}</td>
                     <td>{{ fruit.created_at }}</td>
-{#                    TODO: DELETE UPDATE #}
-                    <td>DELETE UPDATE</td>
+                    <td><a href="{% url 'fruit_update' fruit.pk %}">編集</a></td>
+                    <td><a href="{% url 'fruit_delete' fruit.pk %}">削除</a></td>
                 </tr>
             {% endfor %}
         </table>
+
+    {% else %}
+        <h1>まだ果物情報は登録されていません</h1>
     {% endif %}
 
-{#    TODO : CREATE BUTTON #}
-   <button>CREATE</button>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" formaction="{% url 'fruit_create' %}">新規追加</button>
+    </form>
 
 
 {% endblock content %}

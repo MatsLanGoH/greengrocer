@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.urls import reverse_lazy
 from django.views import generic
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from .models import Fruit, SalesLedger
+from .models import Fruit, Transaction
 
 # TODO
 # TODO: All views need the user to be logged in (except for login site)
@@ -30,12 +32,36 @@ class FruitListView(generic.ListView):
         return Fruit.objects.order_by('-created_at')
 
 
-class SalesLedgerListView(generic.ListView):
+class FruitCreate(CreateView):
     # TODO: docstring
-    model = SalesLedger
+    model = Fruit
+    fields = '__all__'
+    success_url = reverse_lazy('fruits')
+
+    # TODO: Validate input number format
+
+
+class FruitUpdate(UpdateView):
+    # TODO: docstring
+    model = Fruit
+    fields = ['label', 'price']
+    success_url = reverse_lazy('fruits')
+
+    # TODO: Validate input number format
+
+
+class FruitDelete(DeleteView):
+    # TODO: docstring
+    model = Fruit
+    success_url = reverse_lazy('fruits')
+
+
+class TransactionListView(generic.ListView):
+    # TODO: docstring
+    model = Transaction
 
     def get_queryset(self):
-        return SalesLedger.objects.order_by('-created_at')
+        return Transaction.objects.order_by('-created_at')
 
 
 
