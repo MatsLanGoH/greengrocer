@@ -9,7 +9,6 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Fruit, Transaction
 
 
-
 # TODO
 # TODO: All views need the user to be logged in (except for login site)
 
@@ -38,7 +37,6 @@ def transaction_stats(request):
 
     # TODO: Total sales
     sum_total = sum([t.amount for t in transactions])
-
 
     # TODO: Total past three months with details
     # TODO: Make sure we group same fruit (get set, sort by fruit or something)
@@ -100,12 +98,19 @@ class TransactionCreate(CreateView):
     model = Transaction
     fields = ['fruit', 'num_items', 'created_at']
     success_url = reverse_lazy('transactions')
-    initial = {'created_at': now()}
+    initial = {'amount': 0,
+               'created_at': now()}
+
+    # TODO: Calculate amount from given values (in model)
+    def form_valid(self, form):
+        # TODO: docstring
+        obj = form.save(commit=False)
+        obj.amount = obj.fruit.price * obj.num_items
+        return super().form_valid(form)
 
     # TODO: Add a real time picker (jquery or bootstrap)
 
     # TODO: validate input fields
-    # TODO: Calculate amount from given values (in model)
 
 
 class TransactionUpdate(UpdateView):
