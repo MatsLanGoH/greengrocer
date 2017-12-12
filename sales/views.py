@@ -1,6 +1,6 @@
-from django.contrib.admin.widgets import AdminDateWidget
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.contrib import messages
+from django.shortcuts import render, reverse
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.views import generic
@@ -50,6 +50,61 @@ def transaction_stats(request):
                   context={
                       'sum_total': sum_total
                   })
+
+
+def upload_csv(request):
+    # TODO: docstring
+    data = {}
+
+    if request.method == "GET":
+        # TODO: Use url redirection
+        return render(request, 'sales/transaction_list.html')
+
+    try:
+        csv_file = request.FILES['csv_file']
+        # TODO: File validation
+        # File doesn't end with .csv
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, '参照したファイルはCSV形式ではありません')
+            return HttpResponseRedirect(reverse('transactions'))
+        # File is too large
+        if csv_file.multiple_chunks():
+            messages.error(request, '参照ファイルは大きすぎます(%.2f MB)' % (csv_file.size / (1000 * 1000),))
+            return HttpResponseRedirect(reverse('transactions'))
+
+        file_data = csv_file.read().decode("utf-8")
+
+        lines = file_data.split('\n')
+
+        count_success = 0
+        count_fail = 0
+
+        # Loop over lines and try to store Transactions in db.
+        for line in lines:
+            fields = line.split(',')
+            try:
+                t = Transaction()
+                t.fruit = Fruit.objects.get(label=fields[0])
+                t.num_items = fields[1]
+                t.amount = fields[2]
+                t.created_at = fields[3]
+                t.save()
+                count_success += 1
+            except Exception as e:
+                count_fail += 1
+                # TODO: Fix exception handling
+                print(e)
+
+            # TODO: Reimplement this using forms
+            # http: // thepythondjango.com / upload - process - csv - file - django /
+
+        messages.error(request, 'CSV一括登録結果 (成功:{}件　失敗:{}件)'.format(count_success, count_fail))
+    except Exception as e:
+        # TODO: Fix exception handling
+        print(e)
+
+    # TODO: Use url redirection
+    return HttpResponseRedirect(reverse('transactions'))
 
 
 class FruitListView(generic.ListView):
@@ -108,8 +163,6 @@ class TransactionCreate(CreateView):
         obj.amount = obj.fruit.price * obj.num_items
         return super().form_valid(form)
 
-    # TODO: Add a real time picker (jquery or bootstrap)
-
     # TODO: validate input fields
 
 
@@ -119,6 +172,7 @@ class TransactionUpdate(UpdateView):
     fields = ['fruit', 'num_items', 'created_at']
     success_url = reverse_lazy('transactions')
 
+    # TODO: Should UpdateView have different fields? Users might have to fix everything!
     # TODO: validate input fields
     # TODO: make success urls DRY
 

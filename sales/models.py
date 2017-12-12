@@ -10,7 +10,8 @@ class Fruit(models.Model):
 
     TODO: docstring
     """
-    label = models.CharField(max_length=200, unique=True, help_text="果物の名称を記入してください")
+    # TODO: Make sure we cannot enter empty strings (add validator)
+    label = models.CharField(max_length=200, blank=False, unique=True, help_text="果物の名称を記入してください")
     price = models.PositiveIntegerField(help_text="果物の単価を記入してください")
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
@@ -37,7 +38,7 @@ class Transaction(models.Model):
     if not amount:
         amount = fruit.price * num_items
         print(fruit, num_items, amount)
-    created_at = models.DateTimeField(null=True, blank=True, help_text="販売日時を入力してください")
+    created_at = models.DateTimeField(null=False, blank=False, help_text="販売日時を入力してください")
 
     def __str__(self):
         """

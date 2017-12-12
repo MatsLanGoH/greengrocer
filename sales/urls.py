@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'^transaction/create/$', views.TransactionCreate.as_view(), name='transaction_create'),
     url(r'^transaction/(?P<pk>\d+)/update/$', views.TransactionUpdate.as_view(), name='transaction_update'),
     url(r'^transaction/(?P<pk>\d+)/delete/$', views.TransactionDelete.as_view(), name='transaction_delete'),
+    url(r'^upload/csv/$', views.upload_csv, name='upload_csv'),
     url(r'^stats/$', views.transaction_stats, name='transaction_stats'),
 ]

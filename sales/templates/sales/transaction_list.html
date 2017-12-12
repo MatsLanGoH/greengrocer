@@ -35,11 +35,30 @@
     <button type="submit" formaction="{% url 'transaction_create' %}">販売情報登録</button>
     </form>
 
-    <p>CSV一括登録</p>
 
     {#    TODO : UPLOAD FORM BUTTON #}
-    <input type="text"></input>
-    <button>CSV UPLOAD</button>
+    <form action="{% url "upload_csv" %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">CSV一括登録</label>
+            <div>
+                <input type="file" name="csv_file" id="csv_file" accept="text/csv" required="True">
+            </div>
+        </div>
+        <div class="form-group">
+            <div>
+                <button><span></span>CSVアップロード</button>
+            </div>
+        </div>
+        {% if messages %}
+            <p>エラー</p>
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </form>
 
 
 {% endblock content %}
