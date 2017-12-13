@@ -2,8 +2,8 @@
 
 {% block content %}
     {% if fruit_list %}
-        <table>
-
+        <table class="table table-hover table-striped">
+            <thead>
             <tr>
                 <th>ID</th>
                 <th>名称</th>
@@ -12,7 +12,8 @@
                 <th></th>
                 <th></th>
             </tr>
-
+            </thead>
+            <tbody>
             {% for fruit in fruit_list %}
                 <tr>
                     <td>{{ fruit.id }}</td>
@@ -23,6 +24,7 @@
                     <td><a href="{% url 'fruit_delete' fruit.pk %}">削除</a></td>
                 </tr>
             {% endfor %}
+            </tbody>
         </table>
 
     {% else %}

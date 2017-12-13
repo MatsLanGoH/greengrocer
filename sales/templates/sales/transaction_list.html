@@ -4,7 +4,8 @@
 
 {% block content %}
     {% if transaction_list %}
-        <table>
+        <table class="table table-hover table-striped">
+            <thead>
             <tr>
                 <th>果物</th>
                 <th>個数</th>
@@ -13,7 +14,8 @@
                 <th></th>
                 <th></th>
             </tr>
-
+            </thead>
+            <tbody>
             {% for transaction in transaction_list %}
                 <tr>
                     <td>{{ transaction.fruit.label }}</td>
@@ -25,6 +27,7 @@
                     <td><a href="{% url 'transaction_delete' transaction.pk %}">削除</a></td>
                 </tr>
             {% endfor %}
+            </tbody>
         </table>
     {% else %}
         <h1>まだ販売情報は登録されていません</h1>
