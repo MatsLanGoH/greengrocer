@@ -10,9 +10,41 @@
 
 
     <h3>月別</h3>
+    {% if recent_months %}
+        <table>
+            <tr>
+                <th>月</th>
+                <th>売り上げ</th>
+                <th>内訳</th>
+            </tr>
+            {% for month in recent_months %}
+                <tr>
+                    <td>{{ month.date|date:"Y/m" }}</td>
+                    <td>{{ month.total }}</td>
+                    <td>{{ month }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
 
 
     <h3>日別</h3>
+    {% if recent_days %}
+        <table>
+            <tr>
+                <th>日</th>
+                <th>売り上げ</th>
+                <th>内訳</th>
+            </tr>
+            {% for day in recent_days %}
+                <tr>
+                    <td>{{ day.date|date:"Y/m/d" }}</td>
+                    <td>{{ day.total }}</td>
+                    <td>{{ day }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
 
 
 {% endblock %}

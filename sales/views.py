@@ -8,6 +8,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from .models import Fruit, Transaction
 
+from datetime import datetime, date, timedelta
+
 
 # TODO
 # TODO: All views need the user to be logged in (except for login site)
@@ -26,6 +28,39 @@ def top(request):
                   'top.html')
 
 
+class TransactionStat(object):
+    """
+    TODO: docstring
+    this should hold all transactions for that date.
+    """
+
+    def __init__(self):
+        self.date = date.today()
+        self.total = 0  # TODO: Get amount from items instead
+        self.transactions = dict()
+
+    def update_total(self):
+        """
+        TODO docstring
+        :return:
+        """
+        total = 0
+        for item in self.transactions.values():
+            total += item.amount
+        self.total = total
+
+    def __str__(self):
+        """
+        TODO docstring
+        :return:
+        """
+        msg = ""
+        for fruit, transaction in self.transactions.items():
+            msg += "{fruit}: {amount}円({num_items}) ".format(fruit=fruit.label, amount=transaction.amount,
+                                                             num_items=transaction.num_items)
+        return msg
+
+
 def transaction_stats(request):
     """
     TODO: docstring
@@ -39,26 +74,65 @@ def transaction_stats(request):
     sum_total = sum([t.amount for t in transactions])
 
     # TODO: Total past three months with details
+    recent_months = []  # TODO this month, last month, month before that
+    recent_days = []  # TODO Today, yesterday, day before yesterday
+
+    # TODO: Monthly sales
+    # TODO: the next line is super confusing. works though.
+    last_months = [(date.today().replace(day=1) - timedelta(days=_ * 28)).replace(day=1) for _ in range(0, 3)]
+    for t_date in last_months:
+        valid_dates = [ta for ta in transactions if
+                       (t_date.year, t_date.month) == (ta.created_at.year, ta.created_at.month)]
+        t_stat = TransactionStat()
+        t_stat.date = t_date
+
+        for cur_date in valid_dates:
+            if cur_date.fruit in t_stat.transactions.keys():
+                t_stat.transactions[cur_date.fruit].num_items += cur_date.num_items
+                t_stat.transactions[cur_date.fruit].amount += cur_date.amount
+
+            else:
+                t_stat.transactions[cur_date.fruit] = cur_date
+
+        t_stat.update_total()
+        recent_months.append(t_stat)
+
     # TODO: Make sure we group same fruit (get set, sort by fruit or something)
     # TODO: Look for edge cases (leap years etc)
 
     # TODO: Daily sales
+    last_days = [date.today() - timedelta(days=_) for _ in range(0, 3)]
+
+    for t_date in last_days:
+        valid_dates = [ta for ta in transactions if ta.created_at.date() == t_date]
+        t_stat = TransactionStat()
+        t_stat.date = t_date
+
+        for cur_date in valid_dates:
+            if cur_date.fruit in t_stat.transactions.keys():
+                t_stat.transactions[cur_date.fruit].num_items += cur_date.num_items
+                t_stat.transactions[cur_date.fruit].amount += cur_date.amount
+            else:
+                t_stat.transactions[cur_date.fruit] = cur_date
+
+        t_stat.update_total()
+        recent_days.append(t_stat)
 
     # TODO: Use context to pass data to template
     return render(request,
                   'stats.html',
                   context={
-                      'sum_total': sum_total
+                      'sum_total': sum_total,
+                      'recent_months': recent_months,
+                      'recent_days': recent_days,
                   })
 
 
 def upload_csv(request):
     # TODO: docstring
-    data = {}
-
     if request.method == "GET":
         # TODO: Use url redirection
-        return render(request, 'sales/transaction_list.html')
+        return HttpResponseRedirect(reverse('transactions'))
 
     try:
         csv_file = request.FILES['csv_file']
@@ -81,6 +155,7 @@ def upload_csv(request):
 
         # Loop over lines and try to store Transactions in db.
         for line in lines:
+            print(line)
             fields = line.split(',')
             try:
                 t = Transaction()
@@ -88,11 +163,13 @@ def upload_csv(request):
                 t.num_items = fields[1]
                 t.amount = fields[2]
                 t.created_at = fields[3]
+                # TODO: don't forget to set tzinfo as well (handler is complaining already)
                 t.save()
                 count_success += 1
             except Exception as e:
                 count_fail += 1
                 # TODO: Fix exception handling
+                print(fields)
                 print(e)
 
             # TODO: Reimplement this using forms
