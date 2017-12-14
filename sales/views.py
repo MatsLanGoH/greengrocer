@@ -2,14 +2,13 @@ from django.contrib import messages
 from django.shortcuts import render, reverse
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.utils.timezone import now
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from .models import Fruit, Transaction
 
 from datetime import datetime, date, timedelta
-
+import pytz
 
 # TODO
 # TODO: All views need the user to be logged in (except for login site)
@@ -74,47 +73,64 @@ def transaction_stats(request):
     sum_total = sum([t.amount for t in transactions])
 
     # TODO: Total past three months with details
-    recent_months = []  # TODO this month, last month, month before that
-    recent_days = []  # TODO Today, yesterday, day before yesterday
+    recent_months = []
 
-    # TODO: Monthly sales
+    local_timezone = pytz.timezone('Asia/Tokyo')
+
     # TODO: the next line is super confusing. works though.
     last_months = [(date.today().replace(day=1) - timedelta(days=_ * 28)).replace(day=1) for _ in range(0, 3)]
-    for t_date in last_months:
-        valid_dates = [ta for ta in transactions if
-                       (t_date.year, t_date.month) == (ta.created_at.year, ta.created_at.month)]
-        t_stat = TransactionStat()
-        t_stat.date = t_date
 
-        for cur_date in valid_dates:
-            if cur_date.fruit in t_stat.transactions.keys():
-                t_stat.transactions[cur_date.fruit].num_items += cur_date.num_items
-                t_stat.transactions[cur_date.fruit].amount += cur_date.amount
+    for target_date in last_months:
+        # Create a new TransactionStat instance for the target date.
+        t_stat = TransactionStat()
+        t_stat.date = target_date
+
+        # Find all valid transactions for the target date.
+        valid_transactions = []
+        for transaction in transactions:
+            local_date = local_timezone.normalize(transaction.created_at)
+            if (local_date.year, local_date.month) == (target_date.year, target_date.month):
+                valid_transactions.append(transaction)
+
+        # Summarize transaction stats (num of sold items, amount) into TransactionStat instance
+        for transaction in valid_transactions:
+            if transaction.fruit in t_stat.transactions.keys():
+                t_stat.transactions[transaction.fruit].num_items += transaction.num_items
+                t_stat.transactions[transaction.fruit].amount += transaction.amount
 
             else:
-                t_stat.transactions[cur_date.fruit] = cur_date
+                t_stat.transactions[transaction.fruit] = transaction
 
+        # Finally, update total amount and add TransactionStat to list
         t_stat.update_total()
         recent_months.append(t_stat)
 
-    # TODO: Make sure we group same fruit (get set, sort by fruit or something)
-    # TODO: Look for edge cases (leap years etc)
-
     # TODO: Daily sales
+    recent_days = []
+
     last_days = [date.today() - timedelta(days=_) for _ in range(0, 3)]
 
-    for t_date in last_days:
-        valid_dates = [ta for ta in transactions if ta.created_at.date() == t_date]
+    for target_date in last_days:
+        # Create a new TransactionStat instance for the target date.
         t_stat = TransactionStat()
-        t_stat.date = t_date
+        t_stat.date = target_date
 
-        for cur_date in valid_dates:
-            if cur_date.fruit in t_stat.transactions.keys():
-                t_stat.transactions[cur_date.fruit].num_items += cur_date.num_items
-                t_stat.transactions[cur_date.fruit].amount += cur_date.amount
+        # Find all valid transactions for the target date.
+        valid_transactions = []
+        for transaction in transactions:
+            local_date = local_timezone.normalize(transaction.created_at)
+            if local_date.date() == target_date:
+                valid_transactions.append(transaction)
+
+        # Summarize transaction stats (num of sold items, amount) into TransactionStat instance
+        for transaction in valid_transactions:
+            if transaction.fruit in t_stat.transactions.keys():
+                t_stat.transactions[transaction.fruit].num_items += transaction.num_items
+                t_stat.transactions[transaction.fruit].amount += transaction.amount
             else:
-                t_stat.transactions[cur_date.fruit] = cur_date
+                t_stat.transactions[transaction.fruit] = transaction
 
+        # Finally, update total amount and add TransactionStat to list
         t_stat.update_total()
         recent_days.append(t_stat)
 
@@ -126,7 +142,6 @@ def transaction_stats(request):
                       'recent_months': recent_months,
                       'recent_days': recent_days,
                   })
-
 
 def upload_csv(request):
     # TODO: docstring
@@ -233,7 +248,8 @@ class TransactionCreate(CreateView):
     fields = ['fruit', 'num_items', 'created_at']
     success_url = reverse_lazy('transactions')
     initial = {'amount': 0,
-               'created_at': now()}
+               'created_at': datetime.now()}
+    # TODO: datetime.now() stops at server start time
 
     # TODO: Calculate amount from given values (in model)
     def form_valid(self, form):
