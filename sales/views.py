@@ -187,6 +187,7 @@ def upload_csv(request):
 class FruitListView(generic.ListView):
     # TODO: docstring
     model = Fruit
+    paginate_by = 30
 
     # TODO: Make sure these are ordered by reverse creation date!
     def get_queryset(self):
@@ -220,6 +221,7 @@ class FruitDelete(DeleteView):
 class TransactionListView(generic.ListView):
     # TODO: docstring
     model = Transaction
+    paginate_by = 30
 
     def get_queryset(self):
         return Transaction.objects.order_by('-created_at')
