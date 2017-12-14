@@ -1,17 +1,15 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, reverse
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from .models import Fruit, Transaction
-
-from datetime import datetime, date, timedelta
 import pytz
+from datetime import datetime, date, timedelta
 
-# TODO
-# TODO: All views need the user to be logged in (except for login site)
+from .models import Fruit, Transaction
 
 
 # Create views here
@@ -22,7 +20,6 @@ def top(request):
     :param request:
     :return:
     """
-    # TODO: Add login_required decorator or mixin.
     return render(request,
                   'top.html')
 
@@ -143,6 +140,7 @@ def transaction_stats(request):
                       'recent_days': recent_days,
                   })
 
+
 def upload_csv(request):
     # TODO: docstring
     if request.method == "GET":
@@ -199,7 +197,7 @@ def upload_csv(request):
     return HttpResponseRedirect(reverse('transactions'))
 
 
-class FruitListView(generic.ListView):
+class FruitListView(LoginRequiredMixin, generic.ListView):
     # TODO: docstring
     model = Fruit
     paginate_by = 30
@@ -209,7 +207,7 @@ class FruitListView(generic.ListView):
         return Fruit.objects.order_by('-created_at')
 
 
-class FruitCreate(CreateView):
+class FruitCreate(LoginRequiredMixin, CreateView):
     # TODO: docstring
     model = Fruit
     fields = '__all__'
@@ -218,7 +216,7 @@ class FruitCreate(CreateView):
     # TODO: Validate input number format
 
 
-class FruitUpdate(UpdateView):
+class FruitUpdate(LoginRequiredMixin, UpdateView):
     # TODO: docstring
     model = Fruit
     fields = ['label', 'price']
@@ -227,13 +225,13 @@ class FruitUpdate(UpdateView):
     # TODO: Validate input number format
 
 
-class FruitDelete(DeleteView):
+class FruitDelete(LoginRequiredMixin, DeleteView):
     # TODO: docstring
     model = Fruit
     success_url = reverse_lazy('fruits')
 
 
-class TransactionListView(generic.ListView):
+class TransactionListView(LoginRequiredMixin, generic.ListView):
     # TODO: docstring
     model = Transaction
     paginate_by = 30
@@ -242,7 +240,7 @@ class TransactionListView(generic.ListView):
         return Transaction.objects.order_by('-created_at')
 
 
-class TransactionCreate(CreateView):
+class TransactionCreate(LoginRequiredMixin, CreateView):
     # TODO: docstring
     model = Transaction
     fields = ['fruit', 'num_items', 'created_at']
@@ -261,7 +259,7 @@ class TransactionCreate(CreateView):
     # TODO: validate input fields
 
 
-class TransactionUpdate(UpdateView):
+class TransactionUpdate(LoginRequiredMixin, UpdateView):
     # TODO: docstring
     model = Transaction
     fields = ['fruit', 'num_items', 'created_at']
@@ -272,7 +270,7 @@ class TransactionUpdate(UpdateView):
     # TODO: make success urls DRY
 
 
-class TransactionDelete(DeleteView):
+class TransactionDelete(LoginRequiredMixin, DeleteView):
     # TODO: docstring
     model = Transaction
     success_url = reverse_lazy('transactions')
