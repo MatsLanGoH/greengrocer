@@ -1,8 +1,10 @@
 {% extends "base_generic.html" %}
 
-{% block content %}
-    <h1>管理TOP</h1>
+{% block header %}
+    <h2>管理TOP</h2>
+{% endblock %}
 
+{% block content %}
     <p><a href="{% url 'fruits' %}">果物マスター管理</a></p>
 
     <p><a href="{% url 'transactions' %}">販売情報管理</a></p>

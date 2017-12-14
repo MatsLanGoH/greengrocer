@@ -1,5 +1,15 @@
 {% extends "base_generic.html" %}
 
+{% block header %}
+    <h2>果物マスター管理</h2>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li>果物マスター管理</li>
+{% endblock %}
+
 {% block content %}
     {% if fruit_list %}
         <table class="table table-hover table-striped">
@@ -33,7 +43,7 @@
 
     <form method="post">
         {% csrf_token %}
-        <button type="submit" formaction="{% url 'fruit_create' %}">新規追加</button>
+        <button class="btn btn-primary" type="submit" formaction="{% url 'fruit_create' %}">新規追加</button>
     </form>
 
 

@@ -16,9 +16,29 @@
 
 <body>
 <div class="container-fluid">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+            <h1 class="navbar-text">果物販売管理</h1>
+    </nav>
 
-    {% block content %}
-    {% endblock %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+        {% block header %}
+            <h2>管理TOP</h2>
+        {% endblock %}
+        </div>
+
+        <ol class="breadcrumb">
+        {% block breadcrumbs %}
+                <li><a href="{% url 'top' %}">TOP</a></li>
+        {% endblock %}
+        </ol>
+    </div>
+
+    <div class="panel panel-default">
+        <div class=" container-fluid">
+        {% block content %}
+        {% endblock %}</div>
+    </div>
     {% block pagination %}
         {% if is_paginated %}
             <div class="pagination">

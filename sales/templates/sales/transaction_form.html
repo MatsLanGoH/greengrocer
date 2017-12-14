@@ -1,4 +1,13 @@
-{% extends "base_generic.html" %}
+{% extends "sales/transaction_list.html" %}
+
+{% block header %}
+    <h2>販売情報登録</h2>
+{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li>販売情報登録</li>
+{% endblock %}
 
 {% block content %}
 
