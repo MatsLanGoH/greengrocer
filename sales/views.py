@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, reverse
@@ -10,6 +11,7 @@ import pytz
 from datetime import datetime, date, timedelta
 
 from .models import Fruit, Transaction
+from .ledger import Ledger
 
 
 # Create views here
@@ -24,64 +26,28 @@ def top(request):
                   'top.html')
 
 
-class TransactionStat(object):
-    """
-    TODO: docstring
-    this should hold all transactions for that date.
-    """
-
-    def __init__(self):
-        self.date = date.today()
-        self.total = 0  # TODO: Get amount from items instead
-        self.transactions = dict()
-
-    def update_total(self):
-        """
-        TODO docstring
-        :return:
-        """
-        total = 0
-        for item in self.transactions.values():
-            total += item.amount
-        self.total = total
-
-    def __str__(self):
-        """
-        TODO docstring
-        :return:
-        """
-        msg = ""
-        for fruit, transaction in self.transactions.items():
-            msg += "{fruit}: {amount}円({num_items}) ".format(fruit=fruit.label, amount=transaction.amount,
-                                                             num_items=transaction.num_items)
-        return msg
-
-
 def transaction_stats(request):
     """
     TODO: docstring
     :param request:
     :return:
     """
-    # TODO: Get Transaction objects
+    # Get Transaction objects
     transactions = Transaction.objects.all()
 
-    # TODO: Total sales
+    # Get local timezone to adjust UTC timestamps inside database objects
+    local_timezone = pytz.timezone(settings.TIME_ZONE)
+
+    # 1. Calculate total sales
     sum_total = sum([t.amount for t in transactions])
 
+    # 2. Get details for past three months
     # TODO: Total past three months with details
     recent_months = []
-
-    local_timezone = pytz.timezone('Asia/Tokyo')
-
     # TODO: the next line is super confusing. works though.
     last_months = [(date.today().replace(day=1) - timedelta(days=_ * 28)).replace(day=1) for _ in range(0, 3)]
 
     for target_date in last_months:
-        # Create a new TransactionStat instance for the target date.
-        t_stat = TransactionStat()
-        t_stat.date = target_date
-
         # Find all valid transactions for the target date.
         valid_transactions = []
         for transaction in transactions:
@@ -89,47 +55,40 @@ def transaction_stats(request):
             if (local_date.year, local_date.month) == (target_date.year, target_date.month):
                 valid_transactions.append(transaction)
 
-        # Summarize transaction stats (num of sold items, amount) into TransactionStat instance
-        for transaction in valid_transactions:
-            if transaction.fruit in t_stat.transactions.keys():
-                t_stat.transactions[transaction.fruit].num_items += transaction.num_items
-                t_stat.transactions[transaction.fruit].amount += transaction.amount
+        # Todo: Lambda works, but is hard to understand.
+        valid_transactions = filter(
+            lambda t: (local_timezone.normalize(t.created_at).year, local_timezone.normalize(t.created_at).month) == (
+                target_date.year, target_date.month), transactions)
 
-            else:
-                t_stat.transactions[transaction.fruit] = transaction
+        # Create a new Ledger instance for the target date.
+        ledger = Ledger()
+        ledger.set_date(target_date)
+        ledger.add_transactions(valid_transactions)
 
-        # Finally, update total amount and add TransactionStat to list
-        t_stat.update_total()
-        recent_months.append(t_stat)
+        # Finally, update total amount and add Ledger to list
+        ledger.update_total()
 
+        recent_months.append(ledger)
+
+    # 3. Get sales for past three days
     # TODO: Daily sales
     recent_days = []
-
     last_days = [date.today() - timedelta(days=_) for _ in range(0, 3)]
 
     for target_date in last_days:
-        # Create a new TransactionStat instance for the target date.
-        t_stat = TransactionStat()
-        t_stat.date = target_date
-
         # Find all valid transactions for the target date.
-        valid_transactions = []
-        for transaction in transactions:
-            local_date = local_timezone.normalize(transaction.created_at)
-            if local_date.date() == target_date:
-                valid_transactions.append(transaction)
+        valid_transactions = filter(lambda t: local_timezone.normalize(t.created_at).date() == target_date,
+                                    transactions)
 
-        # Summarize transaction stats (num of sold items, amount) into TransactionStat instance
-        for transaction in valid_transactions:
-            if transaction.fruit in t_stat.transactions.keys():
-                t_stat.transactions[transaction.fruit].num_items += transaction.num_items
-                t_stat.transactions[transaction.fruit].amount += transaction.amount
-            else:
-                t_stat.transactions[transaction.fruit] = transaction
+        # Create a new Ledger instance for the target date.
+        ledger = Ledger()
+        ledger.set_date(target_date)
+        ledger.add_transactions(valid_transactions)
 
-        # Finally, update total amount and add TransactionStat to list
-        t_stat.update_total()
-        recent_days.append(t_stat)
+        # Finally, update total amount and add Ledger to list
+        ledger.update_total()
+
+        recent_days.append(ledger)
 
     # TODO: Use context to pass data to template
     return render(request,
@@ -247,6 +206,7 @@ class TransactionCreate(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('transactions')
     initial = {'amount': 0,
                'created_at': datetime.now()}
+
     # TODO: datetime.now() stops at server start time
 
     # TODO: Calculate amount from given values (in model)

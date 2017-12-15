@@ -5,11 +5,12 @@
 {% endblock %}
 
 {% block content %}
-    <p><a href="{% url 'fruits' %}">果物マスター管理</a></p>
 
-    <p><a href="{% url 'transactions' %}">販売情報管理</a></p>
+    <h2 class="text-center"><a href="{% url 'fruits' %}">果物マスター管理</a></h2>
 
-    <p><a href="{% url 'transaction_stats' %}">販売統計情報</a></p>
+    <h2 class="text-center"><a href="{% url 'transactions' %}">販売情報管理</a></h2>
+
+    <h2 class="text-center"><a href="{% url 'transaction_stats' %}">販売統計情報</a></h2>
 
 {% endblock %}
 

@@ -26,19 +26,21 @@
             <h2>管理TOP</h2>
         {% endblock %}
         </div>
-
-        <ol class="breadcrumb">
-        {% block breadcrumbs %}
-                <li><a href="{% url 'top' %}">TOP</a></li>
-        {% endblock %}
-        </ol>
     </div>
+
+    <ol class="breadcrumb">
+        {% block breadcrumbs %}
+            <li><a href="{% url 'top' %}">TOP</a></li>
+        {% endblock %}
+    </ol>
 
     <div class="panel panel-default">
-        <div class=" container-fluid">
+        <div class="container-fluid">
         {% block content %}
-        {% endblock %}</div>
+        {% endblock %}
+        </div>
     </div>
+
     {% block pagination %}
         {% if is_paginated %}
             <div class="pagination">
