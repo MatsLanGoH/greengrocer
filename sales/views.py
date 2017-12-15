@@ -205,9 +205,7 @@ class TransactionCreate(LoginRequiredMixin, CreateView):
     fields = ['fruit', 'num_items', 'created_at']
     success_url = reverse_lazy('transactions')
     initial = {'amount': 0,
-               'created_at': datetime.now()}
-
-    # TODO: datetime.now() stops at server start time
+               'created_at': datetime.now}
 
     # TODO: Calculate amount from given values (in model)
     def form_valid(self, form):
