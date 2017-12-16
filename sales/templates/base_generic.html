@@ -10,7 +10,6 @@
 
     <!-- Add additional CSS in static file -->
     {% load static %}
-    {# TODO: Create custom styles #}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 
@@ -49,8 +48,7 @@
                   <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">前のページ</a>
               {% endif %}
                 <span class="page-current">
-{#                    TODO Japanese translation, or multiple pages indicator #}
-                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} ページ
               </span>
                 {% if page_obj.has_next %}
                     <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">次のページ</a>

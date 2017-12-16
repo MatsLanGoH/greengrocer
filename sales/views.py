@@ -28,7 +28,8 @@ def top(request):
 
 def transaction_stats(request):
     """
-    TODO: docstring
+
+
     :param request:
     :return:
     """
@@ -166,28 +167,28 @@ class FruitListView(LoginRequiredMixin, generic.ListView):
         return Fruit.objects.order_by('-created_at')
 
 
-class FruitCreate(LoginRequiredMixin, CreateView):
-    # TODO: docstring
+class FruitMixin(object):
     model = Fruit
+    success_url = reverse_lazy('fruits')
+
+
+class FruitCreate(LoginRequiredMixin, FruitMixin, CreateView):
+    # TODO: docstring
     fields = '__all__'
-    success_url = reverse_lazy('fruits')
 
     # TODO: Validate input number format
 
 
-class FruitUpdate(LoginRequiredMixin, UpdateView):
+class FruitUpdate(LoginRequiredMixin, FruitMixin, UpdateView):
     # TODO: docstring
-    model = Fruit
     fields = ['label', 'price']
-    success_url = reverse_lazy('fruits')
 
     # TODO: Validate input number format
 
 
-class FruitDelete(LoginRequiredMixin, DeleteView):
+class FruitDelete(LoginRequiredMixin, FruitMixin, DeleteView):
     # TODO: docstring
-    model = Fruit
-    success_url = reverse_lazy('fruits')
+    pass
 
 
 class TransactionListView(LoginRequiredMixin, generic.ListView):
@@ -199,36 +200,33 @@ class TransactionListView(LoginRequiredMixin, generic.ListView):
         return Transaction.objects.order_by('-created_at')
 
 
-class TransactionCreate(LoginRequiredMixin, CreateView):
-    # TODO: docstring
+class TransactionMixin(object):
     model = Transaction
-    fields = ['fruit', 'num_items', 'created_at']
     success_url = reverse_lazy('transactions')
+
+
+class TransactionCreate(LoginRequiredMixin, TransactionMixin, CreateView):
+    # TODO: docstring
+    fields = ['fruit', 'num_items', 'created_at']
     initial = {'amount': 0,
                'created_at': datetime.now}
 
-    # TODO: Calculate amount from given values (in model)
     def form_valid(self, form):
         # TODO: docstring
         obj = form.save(commit=False)
+        # TODO: Calculate amount from given values (in model)
         obj.amount = obj.fruit.price * obj.num_items
         return super().form_valid(form)
 
     # TODO: validate input fields
 
 
-class TransactionUpdate(LoginRequiredMixin, UpdateView):
+class TransactionUpdate(LoginRequiredMixin, TransactionMixin, UpdateView):
     # TODO: docstring
-    model = Transaction
-    fields = ['fruit', 'num_items', 'created_at']
-    success_url = reverse_lazy('transactions')
-
-    # TODO: Should UpdateView have different fields? Users might have to fix everything!
+    fields = ['fruit', 'num_items', 'amount', 'created_at']
     # TODO: validate input fields
-    # TODO: make success urls DRY
 
 
-class TransactionDelete(LoginRequiredMixin, DeleteView):
+class TransactionDelete(LoginRequiredMixin, TransactionMixin, DeleteView):
     # TODO: docstring
-    model = Transaction
-    success_url = reverse_lazy('transactions')
+    pass

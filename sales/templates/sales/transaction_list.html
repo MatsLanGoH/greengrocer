@@ -29,7 +29,6 @@
                     <td>{{ transaction.num_items }}</td>
                     <td>{{ transaction.amount }}</td>
                     <td>{{ transaction.created_at }}</td>
-                    {#                    TODO: DELETE UPDATE #}
                     <td><a href="{% url 'transaction_update' transaction.pk %}">編集</a></td>
                     <td><a href="{% url 'transaction_delete' transaction.pk %}">削除</a></td>
                 </tr>
