@@ -28,7 +28,7 @@ def top(request):
 
 def transaction_stats(request):
     """
-
+    販売統計情報を生成するView
 
     :param request:
     :return:
@@ -102,9 +102,13 @@ def transaction_stats(request):
 
 
 def upload_csv(request):
-    # TODO: docstring
+    """
+    CSV一括登録用のView
+
+    :param request:
+    :return:
+    """
     if request.method == "GET":
-        # TODO: Use url redirection
         return HttpResponseRedirect(reverse('transactions'))
 
     try:
@@ -128,7 +132,6 @@ def upload_csv(request):
 
         # Loop over lines and try to store Transactions in db.
         for line in lines:
-            print(line)
             fields = line.split(',')
             try:
                 t = Transaction()
@@ -140,29 +143,27 @@ def upload_csv(request):
                 t.save()
                 count_success += 1
             except Exception as e:
+                # TODO: Improve exception handling
                 count_fail += 1
-                # TODO: Fix exception handling
-                print(fields)
-                print(e)
 
             # TODO: Reimplement this using forms
             # http: // thepythondjango.com / upload - process - csv - file - django /
 
         messages.error(request, 'CSV一括登録結果 (成功:{}件　失敗:{}件)'.format(count_success, count_fail))
     except Exception as e:
-        # TODO: Fix exception handling
+        # TODO: Improve exception handling
         print(e)
 
-    # TODO: Use url redirection
     return HttpResponseRedirect(reverse('transactions'))
 
 
 class FruitListView(LoginRequiredMixin, generic.ListView):
-    # TODO: docstring
+    """
+    Fruit 一覧を表示するView
+    """
     model = Fruit
     paginate_by = 30
 
-    # TODO: Make sure these are ordered by reverse creation date!
     def get_queryset(self):
         return Fruit.objects.order_by('-created_at')
 
@@ -173,26 +174,34 @@ class FruitMixin(object):
 
 
 class FruitCreate(LoginRequiredMixin, FruitMixin, CreateView):
-    # TODO: docstring
+    """
+    Fruit 登録のView
+    """
     fields = '__all__'
 
     # TODO: Validate input number format
 
 
 class FruitUpdate(LoginRequiredMixin, FruitMixin, UpdateView):
-    # TODO: docstring
+    """
+    Fruit 編集のView
+    """
     fields = ['label', 'price']
 
     # TODO: Validate input number format
 
 
 class FruitDelete(LoginRequiredMixin, FruitMixin, DeleteView):
-    # TODO: docstring
+    """
+    Fruit 削除のView
+    """
     pass
 
 
 class TransactionListView(LoginRequiredMixin, generic.ListView):
-    # TODO: docstring
+    """
+    Transaction 一覧を表示するView
+    """
     model = Transaction
     paginate_by = 30
 
@@ -206,7 +215,9 @@ class TransactionMixin(object):
 
 
 class TransactionCreate(LoginRequiredMixin, TransactionMixin, CreateView):
-    # TODO: docstring
+    """
+    Transaction新規登録のView
+    """
     fields = ['fruit', 'num_items', 'created_at']
     initial = {'amount': 0,
                'created_at': datetime.now}
@@ -222,11 +233,15 @@ class TransactionCreate(LoginRequiredMixin, TransactionMixin, CreateView):
 
 
 class TransactionUpdate(LoginRequiredMixin, TransactionMixin, UpdateView):
-    # TODO: docstring
+    """
+    Transaction編集のView
+    """
     fields = ['fruit', 'num_items', 'amount', 'created_at']
     # TODO: validate input fields
 
 
 class TransactionDelete(LoginRequiredMixin, TransactionMixin, DeleteView):
-    # TODO: docstring
+    """
+    Transaction削除のView
+    """
     pass
