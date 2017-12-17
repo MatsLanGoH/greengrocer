@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms import HiddenInput
 from django.shortcuts import render, reverse
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -10,6 +11,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 import pytz
 from datetime import datetime, date, timedelta
 
+from .forms import FruitForm, TransactionForm
 from .models import Fruit, Transaction
 from .ledger import Ledger
 
@@ -170,6 +172,7 @@ class FruitListView(LoginRequiredMixin, generic.ListView):
 
 class FruitMixin(object):
     model = Fruit
+    form_class = FruitForm
     success_url = reverse_lazy('fruits')
 
 
@@ -177,18 +180,14 @@ class FruitCreate(LoginRequiredMixin, FruitMixin, CreateView):
     """
     Fruit 登録のView
     """
-    fields = '__all__'
-
-    # TODO: Validate input number format
+    pass
 
 
 class FruitUpdate(LoginRequiredMixin, FruitMixin, UpdateView):
     """
     Fruit 編集のView
     """
-    fields = ['label', 'price']
-
-    # TODO: Validate input number format
+    pass
 
 
 class FruitDelete(LoginRequiredMixin, FruitMixin, DeleteView):
@@ -211,6 +210,7 @@ class TransactionListView(LoginRequiredMixin, generic.ListView):
 
 class TransactionMixin(object):
     model = Transaction
+    form_class = TransactionForm
     success_url = reverse_lazy('transactions')
 
 
@@ -218,9 +218,14 @@ class TransactionCreate(LoginRequiredMixin, TransactionMixin, CreateView):
     """
     Transaction新規登録のView
     """
-    fields = ['fruit', 'num_items', 'created_at']
+    # TODO: Can we remove this line? Or move it into our Form definition
     initial = {'amount': 0,
                'created_at': datetime.now}
+
+    def get_form(self, form_class=None):
+        form = super(TransactionCreate, self).get_form()
+        form.fields['amount'].widget = HiddenInput()
+        return form
 
     def form_valid(self, form):
         # TODO: docstring
@@ -229,15 +234,13 @@ class TransactionCreate(LoginRequiredMixin, TransactionMixin, CreateView):
         obj.amount = obj.fruit.price * obj.num_items
         return super().form_valid(form)
 
-    # TODO: validate input fields
-
 
 class TransactionUpdate(LoginRequiredMixin, TransactionMixin, UpdateView):
     """
     Transaction編集のView
     """
-    fields = ['fruit', 'num_items', 'amount', 'created_at']
-    # TODO: validate input fields
+    # fields = ['fruit', 'num_items', 'amount', 'created_at']
+    pass
 
 
 class TransactionDelete(LoginRequiredMixin, TransactionMixin, DeleteView):
