@@ -18,35 +18,39 @@
         {% csrf_token %}
 
        <div class="form-group">
-{#           TODO: Errors#}
-           {{ form.fruit.errors }}
            <label class="control-label" for="{{ form.fruit.id_for_fruit }}">果物</label>
            {{ form.fruit }}
+           {% for error in form.fruit.errors %}
+               <p class="text-warning">{{ error }}</p>
+           {% endfor %}
        </div>
 
         <div class="form-group">
-            {#           TODO: Errors#}
-            {{ form.num_items.errors }}
             <label class="control-label" for="{{ form.num_items.id_for_num_items }}">個数</label>
             {{ form.num_items }}
+            {% for error in form.num_items.errors %}
+                <p class="text-warning">{{ error }}</p>
+            {% endfor %}
         </div>
 
 
-        {% if form.amount not in form.hidden_fields %}
+{#        {% if form.amount not in form.hidden_fields %}#}
         <div class="form-group">
-            {#           TODO: Errors#}
-            {{ form.amount.errors }}
             <label class="control-label" for="{{ form.fruit.id_for_amount }}">売り上げ</label>
             {{ form.amount }}
+            {% for error in form.amount.errors %}
+                <p class="text-warning">{{ error }}</p>
+            {% endfor %}
         </div>
 
-        {% endif %}
+{#        {% endif %}#}
 
         <div class="form-group">
-            {#           TODO: Errors#}
-            {{ form.created_at.errors }}
             <label class="control-label" for="{{ form.fruit.id_for_created_at }}">販売日時</label>
             {{ form.created_at }}
+            {% for error in form.created_at.errors %}
+                <p class="text-warning">{{ error }}</p>
+            {% endfor %}
         </div>
 
         <button type="submit" class="btn btn-primary">登録</button>

@@ -5,7 +5,7 @@
     <h2>ログイン</h2>
     {% if form.errors %}
         {% for error in form.non_field_errors %}
-            <p>{{ error }}</p>
+            <p class="text-warning">{{ error }}</p>
         {% endfor %}
     {% elif next %}
         <p>ログインしてください</p>
@@ -14,15 +14,19 @@
     <form action="{% url 'login' %}" method="post" class="form-horizontal">
         {% csrf_token %}
         <div class="form-group">
-            {{ form.username.errors }}
             <label class="control-label" for="{{ form.username.id_for_label }}">ユーザ名　</label>
             {{ form.username }}
+            {% for error in form.username.errors %}
+                <p class="text-warning">{{ error }}</p>
+            {% endfor %}
         </div>
 
         <div class="form-group">
-            {{ form.password.errors }}
             <label class="control-label" for="{{ form.password.id_for_label }}">パスワード</label>
             {{ form.password }}
+            {% for error in form.password.errors %}
+                <p class="text-warning">{{ error }}</p>
+            {% endfor %}
         </div>
 
         <div class="form-group">

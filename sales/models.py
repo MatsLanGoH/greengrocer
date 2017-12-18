@@ -25,13 +25,9 @@ class Transaction(models.Model):
     """
     fruit = models.ForeignKey('Fruit', on_delete=models.CASCADE, help_text="果物を指定してください")
     num_items = models.PositiveIntegerField(help_text="個数を記入してください")
-    amount = models.PositiveIntegerField(help_text="売り上げ金額を記入してください")
-
-    # 売上金額がない場合、Fruitの価格×個数から計算する
-    if not amount:
-        amount = fruit.price * num_items
-        print(fruit, num_items, amount)
+    amount = models.PositiveIntegerField(default=0, help_text="売り上げ金額を記入してください")
     created_at = models.DateTimeField(null=False, blank=False, help_text="販売日時を入力してください")
+
 
     def __str__(self):
         """

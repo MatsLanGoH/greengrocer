@@ -107,4 +107,10 @@ class TransactionForm(ModelForm):
     class Meta:
         model = Transaction
         fields = ['fruit', 'num_items', 'amount', 'created_at']
+        help_texts = {
+            'fruit': None,
+            'num_items': None,
+            'amount': None,
+            'created_at': None
+        }
 

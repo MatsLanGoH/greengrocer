@@ -244,9 +244,12 @@ class TransactionCreate(LoginRequiredMixin, TransactionMixin, CreateView):
         :param form:
         :return:
         """
-        obj = form.save(commit=False)
-        obj.amount = obj.fruit.price * obj.num_items
-        return super().form_valid(form)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.amount = obj.fruit.price * obj.num_items
+            return super().form_valid(form)
+
+
 
 
 class TransactionUpdate(LoginRequiredMixin, TransactionMixin, UpdateView):
