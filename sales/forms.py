@@ -48,11 +48,11 @@ class FruitForm(ModelForm):
 
         # Check input is a valid date
         if not isinstance(data, datetime):
-            raise ValidationError(_('有効な日付を記入してください。'))
+            raise ValidationError(_('有効な日付を記入してください'))
 
         # Check date is not in the future
         if data > timezone.now():
-            raise ValidationError(_('未来の日付は記入できません。今日までの日付を記入してください。'))
+            raise ValidationError(_('未来の日付は記入できません今日までの日付を記入してください。'))
 
         return data
 
@@ -65,11 +65,30 @@ class TransactionForm(ModelForm):
     def clean_amount(self):
         data = self.cleaned_data['amount']
 
-        return data
+        # Check data is an integer
+        if not isinstance(data, int):
+            raise ValidationError(_('整数を記入してください'))
 
+        # Check amount is not too large
+        if data > 1500000000:  # 夕張メロン×1000個分
+            raise ValidationError(_('1500000000円以下の価格を記入してください'))
+
+        return data
 
     def clean_num_items(self):
         data = self.cleaned_data['num_items']
+
+        # Check data is an integer
+        if not isinstance(data, int):
+            raise ValidationError(_('整数を記入してください'))
+
+        # Check there is at least 1 item in the transaction.
+        if data < 1:
+            raise ValidationError(_('個数は1個以上を記入してください'))
+
+        # Check not more than 1000 items are being added.
+        if data > 1000:
+            raise ValidationError(_('個数が多すぎます（1000個以内の数字を記入してください）'))
 
         return data
 

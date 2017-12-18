@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.forms import HiddenInput
 from django.shortcuts import render, reverse
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views import generic
@@ -190,11 +192,17 @@ class FruitUpdate(LoginRequiredMixin, FruitMixin, UpdateView):
     pass
 
 
-class FruitDelete(LoginRequiredMixin, FruitMixin, DeleteView):
+@login_required
+def fruit_delete(request, pk):
     """
-    Fruit 削除のView
+    Fruitを削除する
+    :param request:
+    :param pk: Fruitのプライマリーキー
+    :return: Fruit 一覧に戻る
     """
-    pass
+    fruit = get_object_or_404(Fruit, pk=pk)
+    fruit.delete()
+    return HttpResponseRedirect(reverse('fruits'))
 
 
 class TransactionListView(LoginRequiredMixin, generic.ListView):
@@ -248,3 +256,17 @@ class TransactionDelete(LoginRequiredMixin, TransactionMixin, DeleteView):
     Transaction削除のView
     """
     pass
+
+
+@login_required
+def transaction_delete(request, pk):
+    """
+    Transactionを削除する
+    :param request:
+    :param pk: Transactionのプライマリーキー
+    :return: Transaction 一覧に戻る
+    """
+    transaction = get_object_or_404(Transaction, pk=pk)
+    transaction.delete()
+    return HttpResponseRedirect(reverse('transactions'))
+

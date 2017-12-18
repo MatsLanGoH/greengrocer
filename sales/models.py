@@ -10,7 +10,6 @@ class Fruit(models.Model):
 
     TODO: docstring
     """
-    # TODO: Make sure we cannot enter empty strings (add validator)
     label = models.CharField(max_length=200, blank=False, unique=True, help_text="果物の名称を記入してください")
     price = models.PositiveIntegerField(help_text="果物の単価を記入してください")
 
