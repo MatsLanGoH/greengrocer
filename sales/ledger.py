@@ -6,10 +6,14 @@ class Ledger:
     販売情報を登録し、合計金額、売上、内訳を返すためのクラス
     """
 
-    def __init__(self):
-        self.date = date.today()
+    def __init__(self, date=date.today(), transactions=[]):
+        self.date = date
         self.total = 0
         self.transactions = dict()
+
+        if transactions:
+            self.add_transactions(transactions)
+            self.update_total()
 
     def add_transactions(self, transactions):
         """

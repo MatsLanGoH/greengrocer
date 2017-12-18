@@ -37,65 +37,67 @@ def transaction_stats(request):
     :param request:
     :return:
     """
-    # Get Transaction objects
+    # Transactionレコードを取得する
     transactions = Transaction.objects.all()
 
-    # Get local timezone to adjust UTC timestamps inside database objects
-    local_timezone = pytz.timezone(settings.TIME_ZONE)
-
-    # 1. Calculate total sales
+    # 1. 累計を計算する
     sum_total = sum([t.amount for t in transactions])
 
-    # 2. Get details for past three months
-    # TODO: Total past three months with details
+
+    # レコードはUTCタイムスタンプで登録されているので、集計処理のためローカルタイムゾーン値も取得する
+    local_timezone = pytz.timezone(settings.TIME_ZONE)
+
+    # 2. 過去3ヶ月の月別売上情報を集計する
     recent_months = []
-    # TODO: the next line is super confusing. works though.
+    """
+    メモ：
+    datetime.timedelta()だと日、週の指定はできるが、月はできないが、ワークアラウンドは次の通り。
+    今日の年月日を取得し、dayを1に置き換える。
+    その日付から、求めるヶ月分×28日を引き、
+    取得した年月日のdayを1に置き換える。
+    注意：数カ月分だけなら問題ないが、12ヶ月以上の場合、ずれが生じてしまう！
+    """
     last_months = [(date.today().replace(day=1) - timedelta(days=_ * 28)).replace(day=1) for _ in range(0, 3)]
 
     for target_date in last_months:
-        # Find all valid transactions for the target date.
+        # 指定した年月に該当するレコードを選定する
         valid_transactions = []
         for transaction in transactions:
             local_date = local_timezone.normalize(transaction.created_at)
             if (local_date.year, local_date.month) == (target_date.year, target_date.month):
                 valid_transactions.append(transaction)
 
-        # Todo: Lambda works, but is hard to understand.
+        """
+        メモ：
+        上記のループ処理は以下のように、lambdaとfilterとして書くことも可能。
+        読みづらいのでとりあえず純粋ループで動かす。
+        
         valid_transactions = filter(
             lambda t: (local_timezone.normalize(t.created_at).year, local_timezone.normalize(t.created_at).month) == (
                 target_date.year, target_date.month), transactions)
+        """
 
-        # Create a new Ledger instance for the target date.
-        ledger = Ledger()
-        ledger.set_date(target_date)
-        ledger.add_transactions(valid_transactions)
+        # Ledgerインスタンスを生成し、指定した日付、該当する販売情報を登録する
+        ledger = Ledger(target_date, valid_transactions)
 
-        # Finally, update total amount and add Ledger to list
-        ledger.update_total()
-
+        # 過去販売情報のリストにLedgerを加える。
         recent_months.append(ledger)
 
-    # 3. Get sales for past three days
-    # TODO: Daily sales
+    # 3. 過去3ヶ日の日別売上情報を集計する
     recent_days = []
     last_days = [date.today() - timedelta(days=_) for _ in range(0, 3)]
 
     for target_date in last_days:
-        # Find all valid transactions for the target date.
+        # 指定した年月日に該当するレコードを選定する
         valid_transactions = filter(lambda t: local_timezone.normalize(t.created_at).date() == target_date,
                                     transactions)
 
-        # Create a new Ledger instance for the target date.
-        ledger = Ledger()
-        ledger.set_date(target_date)
-        ledger.add_transactions(valid_transactions)
+        # Ledgerインスタンスを生成し、指定した日付、該当する販売情報を登録する
+        ledger = Ledger(target_date, valid_transactions)
 
-        # Finally, update total amount and add Ledger to list
-        ledger.update_total()
-
+        # 過去販売情報のリストにLedgerを加える。
         recent_days.append(ledger)
 
-    # TODO: Use context to pass data to template
     return render(request,
                   'stats.html',
                   context={
@@ -117,11 +119,13 @@ def upload_csv(request):
 
     try:
         csv_file = request.FILES['csv_file']
-        # TODO: File validation
+
+        # Validate file
         # File doesn't end with .csv
         if not csv_file.name.endswith('.csv'):
             messages.error(request, '参照したファイルはCSV形式ではありません')
             return HttpResponseRedirect(reverse('transactions'))
+
         # File is too large
         if csv_file.multiple_chunks():
             messages.error(request, '参照ファイルは大きすぎます(%.2f MB)' % (csv_file.size / (1000 * 1000),))
@@ -131,8 +135,8 @@ def upload_csv(request):
 
         lines = file_data.split('\n')
 
-        count_success = 0
-        count_fail = 0
+        count_success = 0  # 成功したアップロードのカウント
+        count_fail = 0  # 失敗したアップロードのカウント
 
         # Loop over lines and try to store Transactions in db.
         for line in lines:
@@ -248,13 +252,6 @@ class TransactionUpdate(LoginRequiredMixin, TransactionMixin, UpdateView):
     Transaction編集のView
     """
     # fields = ['fruit', 'num_items', 'amount', 'created_at']
-    pass
-
-
-class TransactionDelete(LoginRequiredMixin, TransactionMixin, DeleteView):
-    """
-    Transaction削除のView
-    """
     pass
 
 

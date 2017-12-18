@@ -42,7 +42,6 @@ class FruitForm(ModelForm):
         # If all is ok return data
         return data
 
-    # TODO Validate date
     def clean_created_at(self):
         data = self.cleaned_data['created_at']
 
