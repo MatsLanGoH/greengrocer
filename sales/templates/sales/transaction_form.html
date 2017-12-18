@@ -10,15 +10,47 @@
 {% endblock %}
 
 {% block content %}
+    <div class="text-center">
 
-    <form action="" method="post">
+    <h2>販売情報登録</h2>
+
+    <form action="" method="post" class="form-horizontal">
         {% csrf_token %}
 
-        <table>
-            {{ form.as_table }}
-        </table>
+       <div class="form-group">
+{#           TODO: Errors#}
+           {{ form.fruit.errors }}
+           <label class="control-label" for="{{ form.fruit.id_for_fruit }}">果物</label>
+           {{ form.fruit }}
+       </div>
 
-        <input type="submit" value="登録">
+        <div class="form-group">
+            {#           TODO: Errors#}
+            {{ form.num_items.errors }}
+            <label class="control-label" for="{{ form.num_items.id_for_num_items }}">個数</label>
+            {{ form.num_items }}
+        </div>
+
+
+        {% if form.amount not in form.hidden_fields %}
+        <div class="form-group">
+            {#           TODO: Errors#}
+            {{ form.amount.errors }}
+            <label class="control-label" for="{{ form.fruit.id_for_amount }}">売り上げ</label>
+            {{ form.amount }}
+        </div>
+
+        {% endif %}
+
+        <div class="form-group">
+            {#           TODO: Errors#}
+            {{ form.created_at.errors }}
+            <label class="control-label" for="{{ form.fruit.id_for_created_at }}">販売日時</label>
+            {{ form.created_at }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">登録</button>
     </form>
 
+    </div>
 {% endblock %}

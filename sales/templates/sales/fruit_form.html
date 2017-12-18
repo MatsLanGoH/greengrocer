@@ -1,15 +1,37 @@
-{% extends "base_generic.html" %}
+{% extends "sales/fruit_list.html" %}
+
+{% block header %}
+    <h2>果物登録</h2>
+{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li>販売情報登録</li>
+{% endblock %}
 
 {% block content %}
+    <div class="text-center">
 
-    <form action="" method="post">
-        {% csrf_token %}
+        <h2>果物登録</h2>
 
-        <table>
-            {{ form.as_table }}
-        </table>
+        <form action="" method="post" class="form-horizontal">
+            {% csrf_token %}
+            <div class="form-group">
+{#                TODO: Error display#}
+{#                {{ form.label.errors }}#}
+                <label class="control-label" for="{{ form.label.id_for_label }}">名称</label>
+                {{ form.label }}
+            </div>
 
-        <input type="submit" value="登録">
-    </form>
+            <div class="form-group">
+                {#                TODO: Error display#}
+{#                {{ form.price.errors }}#}
+                <label class="control-label" for="{{ form.price.id_for_price }}">単価</label>
+                {{ form.price }}
+            </div>
 
+            <button type="submit" class="btn btn-primary">登録</button>
+        </form>
+
+    </div>
 {% endblock %}

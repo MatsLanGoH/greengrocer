@@ -107,6 +107,7 @@ def transaction_stats(request):
                   })
 
 
+@login_required
 def upload_csv(request):
     """
     CSV一括登録用のView
@@ -120,7 +121,7 @@ def upload_csv(request):
     try:
         csv_file = request.FILES['csv_file']
 
-        # Validate file
+        # ファイルの検証
         # File doesn't end with .csv
         if not csv_file.name.endswith('.csv'):
             messages.error(request, '参照したファイルはCSV形式ではありません')
@@ -138,24 +139,22 @@ def upload_csv(request):
         count_success = 0  # 成功したアップロードのカウント
         count_fail = 0  # 失敗したアップロードのカウント
 
-        # Loop over lines and try to store Transactions in db.
+        # 販売情報をdbに登録する
         for line in lines:
             fields = line.split(',')
-            try:
-                t = Transaction()
-                t.fruit = Fruit.objects.get(label=fields[0])
-                t.num_items = fields[1]
-                t.amount = fields[2]
-                t.created_at = fields[3]
-                # TODO: don't forget to set tzinfo as well (handler is complaining already)
-                t.save()
-                count_success += 1
-            except Exception as e:
-                # TODO: Improve exception handling
-                count_fail += 1
+            # try:
+            t = Transaction()
+            t.fruit = Fruit.objects.get(label=fields[0])
+            t.num_items = fields[1]
+            t.amount = fields[2]
+            t.created_at = fields[3]
+            # TODO: don't forget to set tzinfo as well (handler is complaining already)
+            t.save()
+            count_success += 1
+            # except Exception as e:
+            # TODO: Improve exception handling
+            # count_fail += 1
 
-            # TODO: Reimplement this using forms
-            # http: // thepythondjango.com / upload - process - csv - file - django /
 
         messages.error(request, 'CSV一括登録結果 (成功:{}件　失敗:{}件)'.format(count_success, count_fail))
     except Exception as e:
@@ -170,7 +169,7 @@ class FruitListView(LoginRequiredMixin, generic.ListView):
     Fruit 一覧を表示するView
     """
     model = Fruit
-    paginate_by = 30
+    paginate_by = 220
 
     def get_queryset(self):
         return Fruit.objects.order_by('-created_at')
@@ -214,7 +213,7 @@ class TransactionListView(LoginRequiredMixin, generic.ListView):
     Transaction 一覧を表示するView
     """
     model = Transaction
-    paginate_by = 30
+    paginate_by = 20
 
     def get_queryset(self):
         return Transaction.objects.order_by('-created_at')
@@ -240,9 +239,12 @@ class TransactionCreate(LoginRequiredMixin, TransactionMixin, CreateView):
         return form
 
     def form_valid(self, form):
-        # TODO: docstring
+        """
+        フォーム送信時に販売情報の合計金額を計算し、レコードを登録する
+        :param form:
+        :return:
+        """
         obj = form.save(commit=False)
-        # TODO: Calculate amount from given values (in model)
         obj.amount = obj.fruit.price * obj.num_items
         return super().form_valid(form)
 
