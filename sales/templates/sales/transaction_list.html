@@ -39,7 +39,7 @@
         <h1>まだ販売情報は登録されていません</h1>
     {% endif %}
 
-    <form action="" method-"post">
+    <form action="" method="get">
         {% csrf_token %}
         <button class="btn btn-primary" type="submit" formaction="{% url 'transaction_create' %}">販売情報登録</button>
     </form>

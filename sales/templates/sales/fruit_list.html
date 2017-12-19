@@ -41,8 +41,7 @@
         <h1>まだ果物情報は登録されていません</h1>
     {% endif %}
 
-    <form method="post">
-        {% csrf_token %}
+    <form method="get">
         <button class="btn btn-primary" type="submit" formaction="{% url 'fruit_create' %}">新規追加</button>
     </form>
 

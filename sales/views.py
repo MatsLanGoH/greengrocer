@@ -43,7 +43,6 @@ def transaction_stats(request):
     # 1. 累計を計算する
     sum_total = sum([t.amount for t in transactions])
 
-
     # レコードはUTCタイムスタンプで登録されているので、集計処理のためローカルタイムゾーン値も取得する
     local_timezone = pytz.timezone(settings.TIME_ZONE)
 

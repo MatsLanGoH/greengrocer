@@ -34,16 +34,17 @@
         </div>
 
 
-{#        {% if form.amount not in form.hidden_fields %}#}
+        {% if form.amount in form.hidden_fields %}
+        <div class="form-group hidden">
+        {% else %}
         <div class="form-group">
+        {% endif %}
             <label class="control-label" for="{{ form.fruit.id_for_amount }}">売り上げ</label>
             {{ form.amount }}
             {% for error in form.amount.errors %}
                 <p class="text-warning">{{ error }}</p>
             {% endfor %}
         </div>
-
-{#        {% endif %}#}
 
         <div class="form-group">
             <label class="control-label" for="{{ form.fruit.id_for_created_at }}">販売日時</label>
