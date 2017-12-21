@@ -7,11 +7,13 @@ from django.shortcuts import render, reverse, redirect
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views import generic
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+# from django.views.defaults import page_not_found, server_error
+from django.views.generic.edit import CreateView, UpdateView
 
 import pytz
-from datetime import datetime, date, timedelta
+from datetime import date, timedelta
 
 from .forms import FruitForm, TransactionForm
 from .models import Fruit, Transaction
@@ -141,19 +143,17 @@ def upload_csv(request):
         # 販売情報をdbに登録する
         for line in lines:
             fields = line.split(',')
-            # try:
-            t = Transaction()
-            t.fruit = Fruit.objects.get(label=fields[0])
-            t.num_items = fields[1]
-            t.amount = fields[2]
-            t.created_at = fields[3]
-            # TODO: don't forget to set tzinfo as well (handler is complaining already)
-            t.save()
-            count_success += 1
-            # except Exception as e:
-            # TODO: Improve exception handling
-            # count_fail += 1
-
+            try:
+                t = Transaction()
+                t.fruit = Fruit.objects.get(label=fields[0])
+                t.num_items = fields[1]
+                t.amount = fields[2]
+                t.created_at = fields[3]
+                t.save()
+                count_success += 1
+            except Exception as e:
+                # TODO: Improve exception handling
+                count_fail += 1
 
         messages.error(request, 'CSV一括登録結果 (成功:{}件　失敗:{}件)'.format(count_success, count_fail))
     except Exception as e:
@@ -230,7 +230,7 @@ class TransactionCreate(LoginRequiredMixin, TransactionMixin, CreateView):
     """
     # TODO: Can we remove this line? Or move it into our Form definition
     initial = {'amount': 0,
-               'created_at': datetime.now}
+               'created_at': timezone.now}
 
     def get_form(self, form_class=None):
         form = super(TransactionCreate, self).get_form()
@@ -270,5 +270,19 @@ def transaction_delete(request, pk):
     return HttpResponseRedirect(reverse('transactions'))
 
 
-def handler404(request):
-    return redirect('top')
+def page_not_found(request):
+    """
+    :param request:
+    :return:
+    """
+    messages.error(request, '指定したサイトは存在しません。')
+    return HttpResponseRedirect(reverse('top'))
+
+
+def server_error(request):
+    """
+    :param request:
+    :return:
+    """
+    messages.error(request, '指定したサイトは存在しません。')
+    return HttpResponseRedirect(reverse('top'))

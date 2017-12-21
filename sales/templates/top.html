@@ -14,3 +14,13 @@
 {% endblock %}
 
 
+{% block footer %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>エラー: </strong>{{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

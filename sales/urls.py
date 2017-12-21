@@ -3,8 +3,6 @@ from django.contrib.auth.decorators import login_required
 
 from . import views
 
-# TODO: add 404 page or standard redirections
-
 urlpatterns = [
     url(r'^$', login_required(views.top), name='top'),
     url(r'^fruits/$', views.FruitListView.as_view(), name='fruits'),

@@ -24,3 +24,5 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/sales/', permanent=True)),
 ]
 
+handler404 = 'sales.views.page_not_found'
+handler500 = 'sales.views.server_error'

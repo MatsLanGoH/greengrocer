@@ -4,7 +4,7 @@ from django.test import TestCase
 from sales.models import Fruit
 from sales.models import Transaction
 
-from datetime import datetime
+from django.utils import timezone
 
 
 class FruitModelTest(TestCase):
@@ -42,7 +42,7 @@ class TransactionModelTest(TestCase):
         # Set up non-modified objects used by all test methods.
         Fruit.objects.create(name='リンゴ', price=100)
         fruit = Fruit.objects.get(id=1)
-        Transaction.objects.create(fruit=fruit, num_items=10, amount=1000, created_at=datetime.now())
+        Transaction.objects.create(fruit=fruit, num_items=10, amount=1000, created_at=timezone.now())
 
     def test_fruit_label(self):
         transaction = Transaction.objects.get(id=1)
