@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.forms import HiddenInput
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, redirect
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -168,7 +168,7 @@ class FruitListView(LoginRequiredMixin, generic.ListView):
     Fruit 一覧を表示するView
     """
     model = Fruit
-    paginate_by = 220
+    paginate_by = 20
 
     def get_queryset(self):
         return Fruit.objects.order_by('-created_at')
@@ -249,8 +249,6 @@ class TransactionCreate(LoginRequiredMixin, TransactionMixin, CreateView):
             return super().form_valid(form)
 
 
-
-
 class TransactionUpdate(LoginRequiredMixin, TransactionMixin, UpdateView):
     """
     Transaction編集のView
@@ -271,3 +269,6 @@ def transaction_delete(request, pk):
     transaction.delete()
     return HttpResponseRedirect(reverse('transactions'))
 
+
+def handler404(request):
+    return redirect('top')

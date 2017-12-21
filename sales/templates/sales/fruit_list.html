@@ -27,7 +27,7 @@
             {% for fruit in fruit_list %}
                 <tr>
                     <td>{{ fruit.id }}</td>
-                    <td>{{ fruit.label }}</td>
+                    <td>{{ fruit.name }}</td>
                     <td>{{ fruit.price }}</td>
                     <td>{{ fruit.created_at|date:"Y-m-d" }}</td>
                     <td><a href="{% url 'fruit_update' fruit.pk %}">編集</a></td>

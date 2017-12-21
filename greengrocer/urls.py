@@ -23,3 +23,4 @@ urlpatterns = [
     url(r'^sales/', include('sales.urls')),
     url(r'^$', RedirectView.as_view(url='/sales/', permanent=True)),
 ]
+

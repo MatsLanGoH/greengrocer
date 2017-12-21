@@ -17,9 +17,9 @@
         <form action="" method="post" class="form-horizontal">
             {% csrf_token %}
             <div class="form-group">
-                <label class="control-label" for="{{ form.label.id_for_label }}">名称</label>
-                {{ form.label }}
-                {% for error in form.label.errors %}
+                <label class="control-label" for="{{ form.name.id_for_name }}">名称</label>
+                {{ form.name }}
+                {% for error in form.name.errors %}
                     <p class="text-warning">{{ error }}</p>
                 {% endfor %}
             </div>

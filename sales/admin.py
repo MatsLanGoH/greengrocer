@@ -7,8 +7,8 @@ from .models import Fruit, Transaction
 # Register the Admin classes for Fruit using the decorator
 @admin.register(Fruit)
 class FruitAdmin(admin.ModelAdmin):
-    list_display = ('id', 'label', 'price', 'created_at', 'updated_at')
-    list_filter = ('label', 'price')
+    list_display = ('id', 'name', 'price', 'created_at', 'updated_at')
+    list_filter = ('name', 'price')
 
 
 # Register the Admin classes for Transactions using the decorator

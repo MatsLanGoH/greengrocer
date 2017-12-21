@@ -55,6 +55,6 @@ class Ledger:
         """
         msg = ""
         for product, transaction in self.transactions.items():
-            msg += "{product}: {amount}円({num_items}) ".format(product=product.label, amount=transaction.amount,
+            msg += "{product}: {amount}円({num_items}) ".format(product=product.name, amount=transaction.amount,
                                                                num_items=transaction.num_items)
         return msg

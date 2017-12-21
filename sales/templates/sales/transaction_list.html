@@ -25,7 +25,7 @@
             <tbody>
             {% for transaction in transaction_list %}
                 <tr>
-                    <td>{{ transaction.fruit.label }}</td>
+                    <td>{{ transaction.fruit.name }}</td>
                     <td>{{ transaction.num_items }}</td>
                     <td>{{ transaction.amount }}</td>
                     <td>{{ transaction.created_at }}</td>

@@ -18,3 +18,4 @@ urlpatterns = [
     url(r'^upload/csv/$', login_required(views.upload_csv), name='upload_csv'),
     url(r'^stats/$', login_required(views.transaction_stats), name='transaction_stats'),
 ]
+

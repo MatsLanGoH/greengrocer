@@ -10,8 +10,8 @@ from .models import Fruit, Transaction
 
 
 class FruitForm(ModelForm):
-    def clean_label(self):
-        data = self.cleaned_data['label']
+    def clean_name(self):
+        data = self.cleaned_data['name']
 
         # Check label is longer than 1 char
         if len(data) <= 1:
@@ -57,7 +57,7 @@ class FruitForm(ModelForm):
 
     class Meta:
         model = Fruit
-        fields = ['label', 'price']
+        fields = ["name", 'price']
 
 
 class TransactionForm(ModelForm):
