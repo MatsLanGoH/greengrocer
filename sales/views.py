@@ -145,7 +145,7 @@ def upload_csv(request):
             fields = line.split(',')
             try:
                 t = Transaction()
-                t.fruit = Fruit.objects.get(label=fields[0])
+                t.fruit = Fruit.objects.get(name=fields[0])
                 t.num_items = fields[1]
                 t.amount = fields[2]
                 t.created_at = fields[3]
@@ -153,6 +153,7 @@ def upload_csv(request):
                 count_success += 1
             except Exception as e:
                 # TODO: Improve exception handling
+                print(e)
                 count_fail += 1
 
         messages.error(request, 'CSV一括登録結果 (成功:{}件　失敗:{}件)'.format(count_success, count_fail))

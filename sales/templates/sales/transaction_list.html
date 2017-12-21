@@ -10,6 +10,14 @@
 {% endblock %}
 
 {% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-warning alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>エラー: </strong>{{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
     {% if transaction_list %}
         <table class="table table-hover table-striped">
             <thead>
@@ -58,15 +66,8 @@
             </div>
         </div>
 
-        {% if messages %}
-            <p>エラー</p>
-            <ul class="messages">
-                {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
     </form>
-
-
 {% endblock content %}
+
+{% block footer %}
+{% endblock %}
