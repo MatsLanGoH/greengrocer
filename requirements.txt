@@ -1,3 +1,4 @@
 Django==2.0
+django-widget-tweaks==1.4.1
 pkg-resources==0.0.0
 pytz==2017.3

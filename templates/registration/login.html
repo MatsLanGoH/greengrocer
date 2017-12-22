@@ -11,19 +11,24 @@
         <p>ログインしてください</p>
     {% endif %}
 
+    {% load widget_tweaks %}
     <form action="{% url 'login' %}" method="post" class="form-horizontal">
         {% csrf_token %}
         <div class="form-group">
-            <label class="control-label" for="{{ form.username.id_for_label }}">ユーザ名　</label>
-            {{ form.username }}
+            <label class="col-md-4 control-label" for="{{ form.username.id_for_label }}">ユーザ名　</label>
+            <div class="col-md-4">
+                {% render_field form.username class+="form-control" %}
+            </div>
             {% for error in form.username.errors %}
                 <p class="text-warning">{{ error }}</p>
             {% endfor %}
         </div>
 
         <div class="form-group">
-            <label class="control-label" for="{{ form.password.id_for_label }}">パスワード</label>
-            {{ form.password }}
+            <label class="col-md-4 control-label" for="{{ form.password.id_for_label }}">パスワード</label>
+            <div class="col-md-4">
+                {% render_field form.password class+="form-control" %}
+            </div>
             {% for error in form.password.errors %}
                 <p class="text-warning">{{ error }}</p>
             {% endfor %}
@@ -31,7 +36,6 @@
 
         <div class="form-group">
             <button type="submit" class="btn btn-primary">ログイン</button>
-{#            <input type="submit" value="ログイン"/>#}
             <input type="hidden" name="next" value="{{ next }}"/>
         </div>
     </form>

@@ -14,19 +14,24 @@
 
         <h2>果物登録</h2>
 
+        {% load widget_tweaks %}
         <form action="" method="post" class="form-horizontal">
             {% csrf_token %}
             <div class="form-group">
-                <label class="control-label" for="{{ form.name.id_for_name }}">名称</label>
-                {{ form.name }}
+                <label class="col-md-4 control-label" for="{{ form.name.id_for_name }}">名称</label>
+                <div class="col-md-4">
+                    {% render_field form.name class+="form-control" %}
+                </div>
                 {% for error in form.name.errors %}
                     <p class="text-warning">{{ error }}</p>
                 {% endfor %}
             </div>
 
             <div class="form-group">
-                <label class="control-label" for="{{ form.price.id_for_price }}">単価</label>
-                {{ form.price }}
+                <label class="col-md-4 control-label" for="{{ form.price.id_for_price }}">単価</label>
+                <div class="col-md-4">
+                    {% render_field form.price class+="form-control" %}
+                </div>
                 {% for error in form.price.errors %}
                     <p class="text-warning">{{ error }}</p>
                 {% endfor %}

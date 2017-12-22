@@ -13,7 +13,9 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.conf.urls import include, url
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import RedirectView
 
@@ -22,7 +24,8 @@ urlpatterns = [
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^sales/', include('sales.urls')),
     url(r'^$', RedirectView.as_view(url='/sales/', permanent=True)),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
+# TODO: This also causes redirects for failed CSS loading :/
 handler404 = 'sales.views.page_not_found'
 handler500 = 'sales.views.server_error'

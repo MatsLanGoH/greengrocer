@@ -271,13 +271,13 @@ def transaction_delete(request, pk):
     return HttpResponseRedirect(reverse('transactions'))
 
 
-def page_not_found(request):
-    """
-    :param request:
-    :return:
-    """
-    messages.error(request, '指定したサイトは存在しません。')
-    return HttpResponseRedirect(reverse('top'))
+# def page_not_found(request):
+#     """
+#     :param request:
+#     :return:
+#     """
+#     messages.error(request, '指定したサイトは存在しません。')
+#     return HttpResponseRedirect(reverse('top'))
 
 
 def server_error(request):

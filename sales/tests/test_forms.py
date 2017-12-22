@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.core.exceptions import ValidationError
 
 # Create your tests here.
 
@@ -46,9 +47,11 @@ class FruitFormTest(TestCase):
         form_data = {'name': 'B' * 101}
         form = FruitForm(data=form_data)
         self.assertTrue(u'商品名は短すぎます。2文字以上で記入してください' in form.errors['name'])
-
-    def test_fruit_form_price_is_not_integer(self):
-        form_data = {'price': 'one'}
-        form = FruitForm(data=form_data)
-        self.assertTrue()
     """
+
+    def test_fruit_form_price_is_not_an_integer(self):
+        form_data = {'name': 'リンゴ', 'price': 'one'}
+        form = FruitForm(data=form_data)
+        with self.assertRaises(ValidationError):
+            form.save()
+            form.full_clean()

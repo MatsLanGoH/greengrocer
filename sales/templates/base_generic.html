@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -9,8 +10,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <!-- Add additional CSS in static file -->
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'sales/css/styles.css' %}">
 </head>
 
 <body>
@@ -59,6 +59,14 @@
     {% endblock pagination %}
 
     {% block footer %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger alert-dismissable">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>エラー: </strong>{{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
     {% endblock %}
 </div>
 
