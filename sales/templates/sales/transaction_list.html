@@ -58,10 +58,17 @@
 
         <div class="form-group">
             <label for="name">CSV一括登録</label>
+
             <div class="input-group">
-                <input class="form-control" type="file" name="csv_file" id="csv_file" accept="text/csv" required="True">
+                <label class="input-group-btn">
+                <span class="btn btn-default btn-file">
+                    参照<input class="form-control" type="file" name="csv_file" id="csv_file" accept="text/csv"
+                             required="True" style="display: none">
+                </span>
+                </label>
+                <input type="text" class="form-control" readonly="">
                 <span class="input-group-btn">
-                    <button class="btn btn-default" >CSVアップロード</button>
+                    <button id="csvButton" class="btn btn-default" disabled="">CSVアップロード</button>
                 </span>
             </div>
         </div>
@@ -70,4 +77,19 @@
 {% endblock content %}
 
 {% block footer %}
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // Show filename in form text
+        $(document).on('change', ':file', function () {
+            var input = $(this),
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+            input.parent().parent().next(':text').val(label);
+            if (label.includes(".csv")) {
+                $('#csvButton').prop('disabled', false)
+                    .addClass('btn-success');
+            }
+        });
+    </script>
 {% endblock %}

@@ -15,7 +15,7 @@
     <form action="{% url 'login' %}" method="post" class="form-horizontal">
         {% csrf_token %}
         <div class="form-group">
-            <label class="col-md-4 control-label" for="{{ form.username.id_for_label }}">ユーザ名　</label>
+            <label class="col-md-4 control-label" for="{{ form.username.id_for_label }}">ユーザ名</label>
             <div class="col-md-4">
                 {% render_field form.username class+="form-control" %}
             </div>
