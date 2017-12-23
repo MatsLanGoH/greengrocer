@@ -229,7 +229,6 @@ class TransactionCreate(LoginRequiredMixin, TransactionMixin, CreateView):
     """
     Transaction新規登録のView
     """
-    # TODO: Can we remove this line? Or move it into our Form definition
     initial = {'amount': 0,
                'created_at': timezone.now}
 

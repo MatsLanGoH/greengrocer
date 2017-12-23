@@ -27,9 +27,6 @@ class Transaction(models.Model):
     fruit = models.ForeignKey('Fruit', on_delete=models.CASCADE, help_text="果物を指定してください")
     num_items = models.PositiveIntegerField(help_text="個数を記入してください")
     amount = models.PositiveIntegerField(default=0, help_text="売り上げ金額を記入してください")
-
-    # TODO: What to do about naive timezones (check warnings)
-    # TODO: Why not auto-add creation date?
     created_at = models.DateTimeField(null=False, blank=False, help_text="販売日時を入力してください")
 
     def __str__(self):

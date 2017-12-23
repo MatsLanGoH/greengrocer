@@ -26,6 +26,6 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/sales/', permanent=True)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-# TODO: This also causes redirects for failed CSS loading :/
+# 404, 500は単純にトップページにリダイレクトする
 handler404 = 'sales.views.page_not_found'
 handler500 = 'sales.views.server_error'
