@@ -6,8 +6,12 @@ class Ledger:
     販売情報を登録し、合計金額、売上、内訳を返すためのクラス
     """
 
-    def __init__(self, date=date.today(), transactions=[]):
-        self.date = date
+    def __init__(self, ledger_date=date.today(), transactions=None):
+        """
+        :param ledger_date: まとめる販売情報の年月日
+        :param transactions: Ledgerクラスにまとめる販売情報（Transactionレコード）
+        """
+        self.ledger_date = ledger_date
         self.total = 0
         self.transactions = dict()
 
@@ -45,7 +49,7 @@ class Ledger:
 
         :param ledger_date: 年月日 ex. datetime.date(2017, 12, 24)
         """
-        self.date = ledger_date
+        self.ledger_date = ledger_date
 
     def __str__(self):
         """

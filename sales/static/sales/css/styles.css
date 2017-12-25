@@ -2,7 +2,16 @@ body {
     padding-top: 70px;
 }
 
-
-.navbar-inverse .navbar-text {
-    color: azure;
+.panel:first-child {
+    /*margin-top: 30px;*/
 }
+
+.navbar-header a {
+    font-size: 28px;
+}
+
+.navbar-btn {
+    margin-right: 10px;
+}
+
+

@@ -33,7 +33,6 @@ class Transaction(models.Model):
         """
         :return: 販売情報モデルを表す文字列を返す。
         """
-
         return "{}: {}円({})".format(self.fruit.name, self.amount, self.num_items)
 
 
