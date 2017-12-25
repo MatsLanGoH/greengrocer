@@ -1,0 +1,12 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="text-center">
+            <h2 class="">ログアウトしました。</h2>
+            <hr>
+            <a href="{% url 'login' %}">こちらから再びログインできます。</a>
+        </div>
+    </div>
+
+{% endblock content %}

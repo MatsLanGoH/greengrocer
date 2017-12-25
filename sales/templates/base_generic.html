@@ -22,18 +22,22 @@
             <a href="{% url 'top' %}" class="navbar-brand">果物販売管理</a>
         </div>
         {% if user.is_authenticated %}
-            <button class="btn btn-danger navbar-btn navbar-right">ログアウト</button>
+            <form action="" method="get">
+            <button class="btn btn-danger navbar-btn navbar-right" type="submit" formaction="{% url 'logout' %}">
+                <i class="glyphicon glyphicon-log-out" aria-hidden="true"></i>
+                ログアウト
+            </button>
+           </form>
         {% endif %}
     </div>
 </nav>
 
-
 <div class="container-fluid">
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h2>
-                {% block header %}管理TOP{% endblock %}
-            </h2>
+            <div class="text-center">
+                <h2>{% block header %}管理TOP{% endblock %}</h2>
+            </div>
         </div>
     </div>
 
@@ -69,6 +73,8 @@
             </div>
         {% endif %}
     {% endblock pagination %}
+
+
 
     {% block footer %}
         {% if messages %}
