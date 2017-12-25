@@ -1,6 +1,6 @@
 # greengrocer
 Sales tracker application written in Django 
-(Demo at [pythonanywhere](matslangoh.pythonanywhere.com) / login: testuser / pw: playground)
+(Demo at [pythonanywhere](https://matslangoh.pythonanywhere.com) / login: testuser / pw: playground)
 
 # Getting started.
   - clone this repository: `git clone https://github.com/matslangoh/greengrocer`
