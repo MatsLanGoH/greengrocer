@@ -1,12 +1,22 @@
 # greengrocer
-Sales tracker application written in Django
+Sales tracker application written in Django 
+(Demo at [pythonanywhere](matslangoh.pythonanywhere.com) / login: testuser / pw: playground)
+
+# Getting started.
+  - clone this repository: `git clone https://github.com/matslangoh/greengrocer`
+  - create and activate virtual environment with Python 3.5+: `python3 -m venv env`, `. env/bin/activate` (or similar)
+  - install requirements: `pip install -r requirements.txt`
+  - prepare db: `python manage.py makemigrations`, `python manage.py migrate`
+  - create a superuser: `python manage.py createsuperuser`
+  - and finally run the server: `python manage.py runserver` (with `--insecure` flag if you don't have a server for static files)
+
 
 # 全般の工夫点
 
 ## 環境設定
 - `settings.py` → 本来であればDevelopment、Productionなどに分けるが、ローカルで動かすことがメインとなるためほとんど変更していません。
-- SECRET_KEYはそのままになっているが、本来であれば環境もしくは別ファイルに保存し、os.environで読み込む。
-- STATIC_FILESについては、ローカルだけで動かしているので、`DEBUG = False`の場合は`python manage.py runserver --insecure`で起動しないとと読み込まれない。
+- SECRET_KEYはそのままになっているが、本来であれば環境もしくは別ファイルで設定し、os.environで読み込む。
+- STATIC_FILESについては、ローカルだけで動かしているので、`DEBUG = False`の場合は`python manage.py runserver --insecure`で起動する。
 
 
 ## フロントエンド
