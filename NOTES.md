@@ -191,9 +191,9 @@ def fruit_delete(request, pk):
     sum_total = sum([t.amount for t in transactions])
   ```
   
-  - *月別・日別*のロジックは似ている。それぞれ現時点の年月日を取得し、`timedelta`を使用し、過去3ヶ月（3日間）の年月日をリストに加えていく。
+  - **月別・日別**は基本的に似ているが、選定が妙に違う。現時点の日付を取得し`timedelta`を使用し、過去3ヶ月（3日間）の年月日をリストに加えていく。月別も「日」まで指定するが、その日を「１」とし、同じ月に発生した販売レコードをすべて集計する。
   
-  - 過去3日間の機能は問題なく動いているが、過去3ヶ月の実装には致命的欠点がある。`timedelta`は◯ヶ月単位のdeltaを指定できないが、年始→年末を指定するのに便利（ex. 2017-01-01 - timedelta(days=1）=> 2016-12-31）なので、月単位にも使用したかった。3ヶ月という期間では実際問題ないが、長期間のデータ表示が必要な場合は使えなくなってしまうため、その際は`dateutil`パッケージを使っているか、より丁寧に月の日数を示すロジックを書く必要がある。
+  - 過去3日間の機能は問題なく動いているが、過去3ヶ月の実装には致命的欠点がある。`timedelta`は◯ヶ月単位のdeltaを指定できないが、年始→年末を指定するのに便利（ex. 2017-01-01 - timedelta(days=1）=> 2016-12-31）なので、月単位にも使用したかった。3ヶ月という期間では実際問題ないが、長期間のデータ表示が必要な場合は使えなくなってしまうため、その際は`dateutil`パッケージを使っているか、より丁寧に月の日数を示すロジックを書く必要がある。
   
   ```
     """
@@ -207,13 +207,33 @@ def fruit_delete(request, pk):
     last_months = [(date.today().replace(day=1) - timedelta(days=_ * 28)).replace(day=1) for _ in range(0, 3)]
   ```
   
-  - リストに加えて日付に沿って、該当する販売登録を別のリストにまず保存していく。`Transaction`レコードでは基本的に商品一つしか登録できないため、別に`Ledger`クラスを作成した。`Ledger`は`datetime`と`dict`を所有し、指定された日付に合う販売情報をインスタンスの辞書に集約することができる。（Viewでしか必要ないため、モデルではなくクラスとして実装した）。
+  - リストに加えた日付に沿って、該当する販売登録を別のリストに保存していく。`Transaction`レコードでは基本的に商品一つしか登録できないため、複数の商品×個数を集計する`Ledger`クラスを別に作成した。`Ledger`は`datetime`と`dict`を所有し、指定された日付に合う販売情報をインスタンスの辞書に集約することができる。（Viewでしか必要ないため、モデルではなくクラスとして実装した）。
   
   ```
   # Ledgerインスタンスを生成し、指定した日付、該当する販売情報を登録する
   ledger = Ledger(target_date, valid_transactions)
   ```
+  
+  ```
+  class Ledger:
+    """
+    販売情報を登録し、合計金額、売上、内訳を返すためのクラス
+    """
+
+    def __init__(self, ledger_date=date.today(), transactions=None):
+        """
+        :param ledger_date: まとめる販売情報の年月日
+        :param transactions: Ledgerクラスにまとめる販売情報（Transactionレコード）
+        """
+        self.ledger_date = ledger_date
+        self.total = 0
+        self.transactions = dict()
+
+        if transactions:
+            self.add_transactions(transactions)
+            self.update_total()
+    ```
 
 ## 単体テスト
-  - 一通り、基本的なテストを実装し、それぞれ仕様説明にある条件を満たしていることが確認できている。
+  - 一通り、基本的なテストを実装し、それぞれ仕様説明にあるCHECK条件を満たしていることだけ確認している。
   
