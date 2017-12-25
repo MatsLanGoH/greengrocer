@@ -6,7 +6,7 @@ Sales tracker application written in Django
   - clone this repository: `git clone https://github.com/matslangoh/greengrocer`
   - create and activate virtual environment with Python 3.5+: `python3 -m venv env`, `. env/bin/activate` (or similar)
   - install requirements: `pip install -r requirements.txt`
-  - prepare db: `python manage.py makemigrations`, `python manage.py migrate`
+  - prepare db: `python manage.py makemigrations && python manage.py migrate`
   - create a superuser: `python manage.py createsuperuser`
   - and finally run the server: `python manage.py runserver` (with `--insecure` flag if you don't have a server for static files)
 
