@@ -8,10 +8,25 @@ Sales tracker application written in Django
 - SECRET_KEYはそのままになっているが、本来であれば環境もしくは別ファイルに保存し、os.environで読み込む。
 - STATIC_FILESについては、ローカルだけで動かしているので、`DEBUG = False`の場合は`python manage.py runserver --insecure`で起動しないとと読み込まれない。
 
+
 ## フロントエンド
 - Bootstrap 3を使用しているため、モバイルデバイスでの表示にも対応している。
 - Djangoフォームの標準設定ではBootstrapが組み込みづらいため、`django-widget-tweaks`パッケージを使用し、ラベル・フィールドのカスタムデザインを加えた。
-
+```
+# example
+{% load widget_tweaks %}
+<form action="" method="post" class="form-horizontal">
+{% csrf_token %}
+<div class="form-group">
+    <label class="col-md-4 control-label" for="{{ form.name.id_for_name }}">名称</label>
+    <div class="col-md-4">
+        {% render_field form.name class+="form-control" %}
+    </div>
+    {% for error in form.name.errors %}
+        <p class="text-warning">{{ error }}</p>
+    {% endfor %}
+</div>
+```
 
 # Views
 
@@ -25,6 +40,51 @@ Sales tracker application written in Django
  - おおむね仕様説明に基づいて作成したが、右上にログアウトボタンを追加した。
  - ログイン済みのユーザは、404/500エラーが生じた場合このページにリダイレクトされる。その際、ページの下にエラーメッセージが表示される。
  - リンクは原則、`urls.py`で指定し、`{% url 'hoge' %}`としてテンプレートに埋め込んだ。
+ ```
+ class FruitListView(LoginRequiredMixin, generic.ListView):
+    """
+    Fruit 一覧を表示するView
+    """
+    model = Fruit
+    paginate_by = 20
+
+    def get_queryset(self):
+        return Fruit.objects.order_by('-updated_at')
+
+
+class FruitMixin(object):
+    model = Fruit
+    form_class = FruitForm
+    success_url = reverse_lazy('fruits')
+
+
+class FruitCreate(LoginRequiredMixin, FruitMixin, CreateView):
+    """
+    Fruit 登録のView
+    """
+    pass
+
+
+class FruitUpdate(LoginRequiredMixin, FruitMixin, UpdateView):
+    """
+    Fruit 編集のView
+    """
+    pass
+
+
+@login_required
+def fruit_delete(request, pk):
+    """
+    Fruitを削除する
+    :param request:
+    :param pk: Fruitのプライマリーキー
+    :return: Fruit 一覧に戻る
+    """
+    fruit = get_object_or_404(Fruit, pk=pk)
+    fruit.delete()
+    return HttpResponseRedirect(reverse('fruits'))
+ ```
+ 
 
 ## 商品マスタ管理
   - 操作等は仕様説明の通りに動く。
@@ -32,19 +92,85 @@ Sales tracker application written in Django
   - 単純なページネーションはページ下部分につけてある（レコードが20件を超えた場合表示される）
   - ログイン条件はそれぞれ`@login_required`, `LoginRequiredMixin`でチェックしている。
 
+
 ## 販売情報管理
   - 操作等は仕様説明の通りに動く。
   - 基本的な表示科目は商品マスタ管理と同様に実装している。
   - CSV一括アップロードは、フロントエンドの方でファイル名末尾が`.csv`であればアップロードボタンが有効になる（jQuery）。
-  - Viewのコードで、同様にファイル名末尾のチェック、ファイルサイズが大きすぎないかをチェックし、一行ごとに販売情報をレコードに登録する。
+  ```
+      <script>
+        // Show filename in form text
+        $(document).on('change', ':file', function () {
+            var input = $(this),
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+            input.parent().parent().next(':text').val(label);
+            if (label.includes(".csv")) {
+                $('#csvFileSelect').toggleClass('btn-primary');
+                $('#csvButton').prop('disabled', false)
+                    .addClass('btn-success');
+            }
+        });
+    </script>
+  ```
+
+  - Viewのコードで、同様にファイル名末尾のチェック、ファイルサイズが大きすぎないかをチェックし、一行ごとに販売情報をレコードに登録する。[How to upload and process the CSV file in Django](http://thepythondjango.com/upload-process-csv-file-django/)
+  
+  ```
+        # ファイル名末尾はCSVかチェックする
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, '参照したファイルはCSV形式ではありません')
+            return HttpResponseRedirect(reverse('transactions'))
+
+        # ファイルサイズは大きすぎないかチェックする
+        if csv_file.multiple_chunks():
+            messages.error(request, '参照ファイルは大きすぎます(%.2f MB)' % (csv_file.size / (1000 * 1000),))
+            return HttpResponseRedirect(reverse('transactions'))
+  ```
+  
   - 正常に登録できなかったレコード以外は`pass`していく。（`except Exception as e:`としているが、本当はアンチパターンを避けてもう少し丁寧に処理した方が良いかもしれない。）
+
+
 
 ## 商品＆販売情報登録／編集フォーム
   - 操作等は仕様説明の通りに動く。
   - 各項目の必須形式チェック、モデルで指定されているため無効な値は登録できないようになっている。
   - 他に問題になりそうな記入値（例えば商品名が短すぎる、長すぎる、個数が多すぎる、価格が高すぎる）については`forms.py`でチェックしている。
-  - 販売情報登録フォームの仕様説明では「売り上げ」を指定しないことになっているため、フォーム送信時モデルのメソッドで計算し登録する仕組みを実装した。編集画面については、全項目が編集できるようになっている。
+  ```
+      # example
+      def clean_created_at(self):
+        data = self.cleaned_data['created_at']
+
+        # Check input is a valid date
+        if not isinstance(data, datetime):
+            raise ValidationError(_('有効な日付を記入してください'))
+
+        # Check date is not in the future
+        if data > timezone.now():
+            raise ValidationError(_('未来の日付は記入できません。今日までの日付を記入してください。'))
+
+        return data
+  ```
   
+  - 販売情報登録フォームの仕様説明では「売り上げ」を指定しないことになっているため、フォーム送信時に商品の単価と個数から計算し、登録する仕組みを実装した。編集画面については、全項目が編集できるようになっている。
+  ```
+    def get_form(self, form_class=None):
+        form = super(TransactionCreate, self).get_form()
+        form.fields['amount'].widget = HiddenInput()
+        return form
+
+    def form_valid(self, form):
+        """
+        フォーム送信時に販売情報の合計金額を計算し、レコードを登録する
+        :param form:
+        :return:
+        """
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.amount = obj.fruit.price * obj.num_items
+            return super().form_valid(form)
+  ```
+
+
 ## 商品販売管理
   - 仕様説明の通り、Django ORMを利用せず実装した。
   - 詳細は次の通り。
@@ -73,6 +199,10 @@ Sales tracker application written in Django
   
   - リストに加えて日付に沿って、該当する販売登録を別のリストにまず保存していく。`Transaction`レコードでは基本的に商品一つしか登録できないため、別に`Ledger`クラスを作成した。`Ledger`は`datetime`と`dict`を所有し、指定された日付に合う販売情報をインスタンスの辞書に集約することができる。（Viewでしか必要ないため、モデルではなくクラスとして実装した）。
   
+  ```
+  # Ledgerインスタンスを生成し、指定した日付、該当する販売情報を登録する
+  ledger = Ledger(target_date, valid_transactions)
+  ```
 
 ## 単体テスト
   - 一通り、基本的なテストを実装し、それぞれ仕様説明にある条件を満たしていることが確認できている。
