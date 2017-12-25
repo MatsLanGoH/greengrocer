@@ -35,8 +35,8 @@
                     <td>{{ transaction.num_items }}</td>
                     <td>{{ transaction.amount }}</td>
                     <td>{{ transaction.created_at }}</td>
-                    <td><a href="{% url 'transaction_update' transaction.pk %}">編集</a></td>
-                    <td><a href="{% url 'transaction_delete' transaction.pk %}">削除</a></td>
+                    <td><a class="text-info" href="{% url 'transaction_update' transaction.pk %}">編集</a></td>
+                    <td><a class="text-danger" href="{% url 'transaction_delete' transaction.pk %}">削除</a></td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -45,12 +45,18 @@
         <h1>まだ販売情報は登録されていません</h1>
     {% endif %}
 
-    <form action="" method="get">
-        {% csrf_token %}
-        <button class="btn btn-primary" type="submit" formaction="{% url 'transaction_create' %}">販売情報登録</button>
-    </form>
+    <hr>
+    <div class="form-group">
+        <form action="" method="get">
+            {% csrf_token %}
+            <button class="btn btn-primary btn-center" type="submit" formaction="{% url 'transaction_create' %}">
+                <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                販売情報登録
+            </button>
+        </form>
+    </div>
 
-
+    <hr>
     <form action="{% url "upload_csv" %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
 
@@ -59,14 +65,17 @@
 
             <div class="input-group">
                 <label class="input-group-btn">
-                <span class="btn btn-default btn-file">
+                <span id="csvFileSelect" class="btn btn-default btn-file btn-primary">
                     参照<input class="form-control" type="file" name="csv_file" id="csv_file" accept="text/csv"
                              required="True" style="display: none">
                 </span>
                 </label>
                 <input type="text" class="form-control" readonly="">
                 <span class="input-group-btn">
-                    <button id="csvButton" class="btn btn-default" disabled="">CSVアップロード</button>
+                    <button id="csvButton" class="btn btn-default" disabled="">
+                        <i class="glyphicon glyphicon-upload" aria-hidden="true"></i>
+                        CSVアップロード
+                    </button>
                 </span>
             </div>
         </div>
@@ -85,6 +94,7 @@
                 label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
             input.parent().parent().next(':text').val(label);
             if (label.includes(".csv")) {
+                $('#csvFileSelect').toggleClass('btn-primary');
                 $('#csvButton').prop('disabled', false)
                     .addClass('btn-success');
             }

@@ -28,8 +28,8 @@
                     <td>{{ fruit.name }}</td>
                     <td>{{ fruit.price }}</td>
                     <td>{{ fruit.created_at|date:"Y-m-d" }}</td>
-                    <td><a href="{% url 'fruit_update' fruit.pk %}">編集</a></td>
-                    <td><a href="{% url 'fruit_delete' fruit.pk %}">削除</a></td>
+                    <td><a class="text-info" href="{% url 'fruit_update' fruit.pk %}">編集</a></td>
+                    <td><a class="text-danger" href="{% url 'fruit_delete' fruit.pk %}">削除</a></td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -39,9 +39,14 @@
         <h1>まだ果物情報は登録されていません</h1>
     {% endif %}
 
-    <form method="get">
-        <button class="btn btn-primary" type="submit" formaction="{% url 'fruit_create' %}">新規追加</button>
-    </form>
-
+    <hr>
+    <div class="form-group">
+        <form method="get">
+            <button class="btn btn-primary" type="submit" formaction="{% url 'fruit_create' %}">
+                <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                新規追加
+            </button>
+        </form>
+    </div>
 
 {% endblock content %}

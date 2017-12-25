@@ -11,6 +11,8 @@
     <h3>累計</h3>
     <h3>{{ sum_total }}円</h3>
 
+    <hr>
+
     <h3>月別</h3>
     {% if recent_months %}
         <table class="table table-hover table-striped">
@@ -24,7 +26,7 @@
             <tbody>
             {% for month in recent_months %}
                 <tr>
-                    <td>{{ month.date|date:"Y/m" }}</td>
+                    <td>{{ month.ledger_date|date:"Y/m" }}</td>
                     <td>{{ month.total }}円</td>
                     <td>{{ month }}</td>
                 </tr>
@@ -33,6 +35,7 @@
         </table>
     {% endif %}
 
+    <hr>
 
     <h3>日別</h3>
     {% if recent_days %}
@@ -47,7 +50,7 @@
             <tbody>
             {% for day in recent_days %}
                 <tr>
-                    <td>{{ day.date|date:"Y/m/d" }}</td>
+                    <td>{{ day.ledger_date|date:"Y/m/d" }}</td>
                     <td>{{ day.total }}円</td>
                     <td>{{ day }}</td>
                 </tr>

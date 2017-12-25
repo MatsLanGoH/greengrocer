@@ -115,5 +115,3 @@ class TransactionListViewTest(TestCase):
         self.assertTrue(len(resp.context['transaction_list']) == 10)
 
 
-    # TODO : Test that empty dates are displayed correctly
-    # TODO : Test that end of month, end of year, leap years are counted correctly.
