@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.utils import timezone
-from django.core.exceptions import ValidationError
 
 from datetime import timedelta
 
@@ -125,4 +124,3 @@ class TransactionFormTest(TestCase):
         }
         form = TransactionForm(data=form_data)
         self.assertFalse(form.is_valid())
-

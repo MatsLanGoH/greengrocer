@@ -51,7 +51,7 @@ class FruitForm(ModelForm):
 
         # Check date is not in the future
         if data > timezone.now():
-            raise ValidationError(_('未来の日付は記入できません今日までの日付を記入してください。'))
+            raise ValidationError(_('未来の日付は記入できません。今日までの日付を記入してください。'))
 
         return data
 

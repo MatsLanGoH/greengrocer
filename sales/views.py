@@ -3,13 +3,12 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.forms import HiddenInput
-from django.shortcuts import render, reverse, redirect
+from django.shortcuts import render, reverse
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
-# from django.views.defaults import page_not_found, server_error
 from django.views.generic.edit import CreateView, UpdateView
 
 import pytz
@@ -123,12 +122,12 @@ def upload_csv(request):
         csv_file = request.FILES['csv_file']
 
         # ファイルの検証
-        # File doesn't end with .csv
+        # ファイル名末尾はCSVかチェックする
         if not csv_file.name.endswith('.csv'):
             messages.error(request, '参照したファイルはCSV形式ではありません')
             return HttpResponseRedirect(reverse('transactions'))
 
-        # File is too large
+        # ファイルサイズは大きすぎないかチェックする
         if csv_file.multiple_chunks():
             messages.error(request, '参照ファイルは大きすぎます(%.2f MB)' % (csv_file.size / (1000 * 1000),))
             return HttpResponseRedirect(reverse('transactions'))
@@ -153,13 +152,12 @@ def upload_csv(request):
                 count_success += 1
             except Exception as e:
                 # TODO: Improve exception handling
-                print(e)
                 count_fail += 1
 
         messages.error(request, 'CSV一括登録結果 (成功:{}件　失敗:{}件)'.format(count_success, count_fail))
     except Exception as e:
         # TODO: Improve exception handling
-        print(e)
+        pass
 
     return HttpResponseRedirect(reverse('transactions'))
 
@@ -172,7 +170,7 @@ class FruitListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        return Fruit.objects.order_by('-created_at')
+        return Fruit.objects.order_by('-updated_at')
 
 
 class FruitMixin(object):
@@ -253,7 +251,6 @@ class TransactionUpdate(LoginRequiredMixin, TransactionMixin, UpdateView):
     """
     Transaction編集のView
     """
-    # fields = ['fruit', 'num_items', 'amount', 'created_at']
     pass
 
 
@@ -268,15 +265,6 @@ def transaction_delete(request, pk):
     transaction = get_object_or_404(Transaction, pk=pk)
     transaction.delete()
     return HttpResponseRedirect(reverse('transactions'))
-
-
-# def page_not_found(request):
-#     """
-#     :param request:
-#     :return:
-#     """
-#     messages.error(request, '指定したサイトは存在しません。')
-#     return HttpResponseRedirect(reverse('top'))
 
 
 def server_error(request):
